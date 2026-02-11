@@ -2,8 +2,10 @@ import java.time.LocalDate;
 
 public class Estudiante {
     private String codigo;
+    private String cedula;
     private String nombre;
     private String apellido;
+
 
     public Estudiante(String nombre, String apellido) {
         CodigoEstudiantil codigoEstudiantil = new CodigoEstudiantil();
@@ -11,6 +13,19 @@ public class Estudiante {
         this.nombre = nombre;
         this.apellido = apellido;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

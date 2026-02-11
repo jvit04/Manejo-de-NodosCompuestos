@@ -63,6 +63,7 @@ public class Main {
         System.out.println(listaFiltrada);
 
         System.out.println(L.getHeader().getReferenciaLista().unirListasSinRepetidos(L.getTail().getReferenciaLista()));
-
+        System.out.println(L.getHeader().getReferenciaLista().devolverInsterseccion(L.getTail().getReferenciaLista()));
     }
 }
+

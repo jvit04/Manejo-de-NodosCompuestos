@@ -1,13 +1,14 @@
 import java.time.LocalDate;
 
 public class Entrega {
-    private int nota;
+    private double nota;
+    private String contenido;
     private LocalDate fechaEntrega;
     private String comentarios;
     private Estudiante estudiante;
     private Actividad actividad;
 
-    public Entrega(int nota, String comentarios, Estudiante estudiante, Actividad actividad) {
+    public Entrega(double nota, String comentarios, Estudiante estudiante, Actividad actividad) {
         this.nota = nota;
         this.fechaEntrega = LocalDate.now();
         this.comentarios = comentarios;
@@ -15,7 +16,7 @@ public class Entrega {
         this.actividad = actividad;
     }
 
-    public Entrega(int nota, Estudiante estudiante, Actividad actividad) {
+    public Entrega(double nota, Estudiante estudiante, Actividad actividad) {
         this.nota = nota;
         this.fechaEntrega = LocalDate.now();
         this.estudiante = estudiante;
@@ -23,11 +24,11 @@ public class Entrega {
         this.comentarios = "Sin comentarios";
     }
 
-    public Entrega(int nota) {
+    public Entrega(double nota) {
         this.nota = nota;
     }
 
-    public int getNota() {
+    public double getNota() {
         return nota;
     }
 

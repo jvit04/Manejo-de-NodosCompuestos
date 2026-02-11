@@ -1,3 +1,4 @@
+import java.io.Flushable;
 import java.util.Comparator;
 
 public class ListaCompuesta <E,F> {
@@ -138,6 +139,16 @@ public class ListaCompuesta <E,F> {
         return nuevaLista;
     }
 
+    public ListaCompuesta<E,F> devolverInsterseccion(ListaCompuesta<E,F> lista){
+        ListaCompuesta<E,F> unidaSinRepeticion = this.unirListasSinRepetidos(lista);
+        ListaCompuesta <E,F> interserccion = new ListaCompuesta<>();
+        for(NodoCompuesto <E,F> i = unidaSinRepeticion.header; i!=null; i=i.getNext()){
+            if(unidaSinRepeticion.existeDato(this,i.getData())&& unidaSinRepeticion.existeDato(lista, i.getData())){
+                interserccion.addToList(i);
+            }
+        }
+        return interserccion;
+    }
 
 
     }

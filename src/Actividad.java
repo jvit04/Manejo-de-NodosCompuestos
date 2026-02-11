@@ -3,6 +3,7 @@ import java.time.LocalDate;
 public class Actividad {
     private String nombre;
     private String descripcion;
+    private String tipo;
     private LocalDate fechaEnvio;
     private LocalDate fechaLimite;
     private int notaMaxima;
