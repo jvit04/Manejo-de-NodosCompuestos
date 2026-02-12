@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.util.Comparator;
 
-class ListaCompuesta <E, F>{
+class ListaCompuesta <E, F> implements Serializable {
 
     private NodoCompuesto<E, F> header;
     private NodoCompuesto<E, F> tail;
