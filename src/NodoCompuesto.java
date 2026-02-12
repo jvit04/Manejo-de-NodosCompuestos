@@ -1,22 +1,20 @@
-public class NodoCompuesto<E,F> {
-    //Atributos del nodo compuesto
-    private E data; //En este caso serán objetos Estudiantes o Actividades
-    private NodoCompuesto<E,F> next; //Contiene la información del siguiente nodo
-    private ListaCompuesta<E,F> referenciaLista; //Lista secundaria del Nodo, que contendrá datos tipo Entrega
+class NodoCompuesto<E, F>{
+    // de dato principal tendra dato de tipo E
+    private E data;
+    private NodoCompuesto<E, F> next;
+    // pero la lista a que tendra referencia sera una lista de tipo F, y no sabemos de que más adicionalmente por eso F,F
+    private ListaCompuesta<F, F> referenciaLista;
 
-    //Constructor
-    public NodoCompuesto(E data) {
-        this.data = data;
+    public NodoCompuesto(E dato){
+        this.data = dato;
         this.next = null;
-        this.referenciaLista = new ListaCompuesta<>();
+        this.referenciaLista = null;
     }
 
-    //Getters y Setters
     public NodoCompuesto<E, F> getNext(){return this.next;}
     public void setNext(NodoCompuesto<E, F> nodo){this.next = nodo;}
-    public void SetListaCompuesta(ListaCompuesta<E, F> lista){this.referenciaLista = lista;}
-    public ListaCompuesta<E, F> getReferenciaLista(){return this.referenciaLista;}
+    public void SetListaCompuesta(ListaCompuesta<F, F> lista){this.referenciaLista = lista;}
+    public ListaCompuesta<F, F> getReferenciaLista(){return this.referenciaLista;}
     public E getData(){return this.data;}
-
 
 }
