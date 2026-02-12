@@ -1,12 +1,34 @@
-import java.io.Serializable;
+public class Estudiante {
+    //Atributos
+    private String codigo;
+    private String cedula;
+    private String nombre;
+    private String apellido;
 
-class Estudiante implements Serializable {
-    private String nombre, apellido; 
-    public Estudiante(String nombre, String apellido){
-        this.nombre=nombre;
+    //Constructor
+    public Estudiante(String nombre, String apellido, String cedula) {
+        CodigoEstudiantil codigoEstudiantil = new CodigoEstudiantil();
+        this.codigo = codigoEstudiantil.generarCodigoNuevo();
+        this.nombre = nombre;
+        this.cedula = cedula;
         this.apellido = apellido;
     }
+
+    //Método toString
     public String toString(){
-        return nombre + " " + apellido;
+        return "Código de estudiante: " + codigo + "\nNombre: " + nombre + "\nApellido: " + apellido;
+    }
+
+    //Getters y Setters
+    public String getCodigo() {
+        return codigo;
+    }
+    public String getApellido() {
+        return apellido;
+    }
+    public String getNombre() {
+        return nombre;
     }
 }
+
+
