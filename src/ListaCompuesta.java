@@ -193,6 +193,41 @@ public class ListaCompuesta <E,F> {
     public NodoCompuesto <E,F> getAnteriorListaSecundaria(ListaCompuesta<E,F> lista, NodoCompuesto <E,F> nodo){
         return lista.getAnteriorListaPrincipal(nodo);
     }
+
+
+    public ListaCompuesta<E, F> buscarPorPorcentajeEntrega(int totalActividades, double minPorcentaje, double maxPorcentaje) {
+        ListaCompuesta<E, F> listaResultado = new ListaCompuesta<>();
+        NodoCompuesto<E, F> actual = this.header;
+        while (actual != null) {
+            int entregasRealizadas = 0;
+            if (actual.getReferenciaLista() != null) {
+                entregasRealizadas = actual.getReferenciaLista().getSize();}
+            double porcentaje = ((double) entregasRealizadas / totalActividades) * 100.0;
+            if (porcentaje >= minPorcentaje && porcentaje <= maxPorcentaje) {
+                NodoCompuesto<E, F> nodoEstudiante = new NodoCompuesto<>(actual.getData());
+                nodoEstudiante.SetListaCompuesta(actual.getReferenciaLista());
+                listaResultado.addToMainList(nodoEstudiante);}
+            actual = actual.getNext();}
+        return listaResultado;}
+
+
+
+    public ListaCompuesta<E, F> buscarEstudiantesConDuplicadosEnSecundaria(Comparator<F> criterioDeIgualdad) {
+        if(this.isEmpty())return null;
+        ListaCompuesta<E, F> resultados = new ListaCompuesta<>();
+
+        // 1. Recorremos la lista principal la cual es 'Estudiantes'
+        for (NodoCompuesto<E,F> i = this.header; i!=null; i=i.getNext()) {
+            if(i.getReferenciaLista().isEmpty()) continue;
+            for (NodoCompuesto<F,F> j = i.getReferenciaLista().getHeader(); j!=null; j=j.getNext()) {
+                if (!i.equals(j) && criterioDeIgualdad.compare(i,j))
+            }
+        }
+
+        return resultados;
+    }
+
+
     }
 
 
