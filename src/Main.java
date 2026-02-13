@@ -31,10 +31,10 @@ public class Main {
         Actividad actRef = new Actividad("Ref", "Ref", fechaCorte, 0, "Ref");
 
         ListaCompuesta<Actividad, Entrega> vencidas = listaActividades.buscarActividadesVencidas(compFechas, actRef);
-        System.out.println("   - Actividades POSTERIORES a Abril (Futuras): " + vencidas.getSize());
+        System.out.println("   - Actividades POSTERIORES a la fecha (Futuras): " + vencidas.getSize());
 
         ListaCompuesta<Actividad, Entrega> vigentes = listaActividades.buscarActividadesVigentes(compFechas, actRef);
-        System.out.println("   - Actividades ANTERIORES a Abril (Pasadas): " + vigentes.getSize());
+        System.out.println("   - Actividades ANTERIORES a la fecha (Pasadas): " + vigentes.getSize());
 
 
         // PRUEBA B: Estudiantes con Entregas Duplicadas
