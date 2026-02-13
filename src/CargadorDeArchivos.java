@@ -46,4 +46,57 @@ public class CargadorDeArchivos {
         }
         return lista;
     }
+
+    // Método para cargar Entregas y asignarlas a los estudiantes correspondientes
+    public static void cargarEntregas(String rutaArchivo,
+                                      ListaCompuesta<Estudiante, Entrega> listaEstudiantes,
+                                      ListaCompuesta<Actividad, Entrega> listaActividades) {
+
+        try (BufferedReader br = new BufferedReader(new FileReader(rutaArchivo))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                // Formato: Cedula,NombreActividad,Nota,Comentario
+                String[] datos = linea.split(",");
+
+                if(datos.length >= 4){
+                    String cedulaBusq = datos[0].trim();
+                    String nombreActBusq = datos[1].trim();
+                    double nota = Double.parseDouble(datos[2].trim());
+                    String comentario = datos[3].trim();
+
+                    // 1. Buscar al Estudiante por Cédula
+                    NodoCompuesto<Estudiante, Entrega> nodoEst = null;
+                    for(NodoCompuesto<Estudiante, Entrega> p = listaEstudiantes.getHeader(); p != null; p = p.getNext()){
+                        if(p.getData().getCedula().equals(cedulaBusq)){
+                            nodoEst = p;
+                            break;
+                        }
+                    }
+
+                    // 2. Buscar la Actividad por Nombre
+                    Actividad actEncontrada = null;
+                    for(NodoCompuesto<Actividad, Entrega> a = listaActividades.getHeader(); a != null; a = a.getNext()){
+                        if(a.getData().getNombre().equalsIgnoreCase(nombreActBusq)){
+                            actEncontrada = a.getData();
+                            break;
+                        }
+                    }
+
+                    // 3. Si ambos existen, creamos la entrega y la vinculamos
+                    if (nodoEst != null && actEncontrada != null) {
+                        Estudiante est = nodoEst.getData();
+                        Entrega nuevaEntrega = new Entrega(nota, comentario, est, actEncontrada);
+
+                        // Agregamos a la lista secundaria del estudiante
+                        listaEstudiantes.addElementInSecondaryList(nodoEst, nuevaEntrega);
+                    }
+                }
+            }
+            System.out.println(">> Entregas cargadas desde archivo correctamente.");
+        } catch (IOException e) {
+            System.out.println("Error leyendo entregas: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error procesando datos de entregas: " + e.getMessage());
+        }
+    }
 }

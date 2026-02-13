@@ -1,0 +1,15 @@
+0923456781,Taller 1,10,Excelente trabajo
+0923456781,Leccion 1,8.5,Buen razonamiento
+0923456781,Taller 1,10,ERROR: Nota duplicada manualmente (Prueba Duplicados)
+
+0918273645,Taller 1,9,Muy bien
+0918273645,Leccion 1,10,Perfecto
+0918273645,Proyecto P1,20,Cumple todo
+0918273645,Taller 2,10,Correcto
+0918273645,Examen Medio,25,Falto un punto
+
+0911223344,Taller 1,5,Faltaron ejercicios
+0911223344,Leccion 1,6,Estudiar mas
+
+0987654321,Proyecto P1,18,Buena interfaz
+0987654321,Proyecto P1,18,ERROR: Subido dos veces (Prueba Duplicados)

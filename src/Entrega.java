@@ -20,13 +20,6 @@ public class Entrega implements Serializable {
         this.actividad = actividad;
     }
 
-    public Entrega(double nota, Estudiante estudiante, Actividad actividad) {
-        this.nota = nota;
-        this.fechaEntrega = LocalDate.now();
-        this.estudiante = estudiante;
-        this.actividad = actividad;
-        this.comentarios = "Sin comentarios";
-    }
 
     //Getters y Setters
     public Entrega(double nota) {

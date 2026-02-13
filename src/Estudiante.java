@@ -31,6 +31,10 @@ public class Estudiante implements Serializable {
     public String getNombre() {
         return nombre;
     }
+
+    public String getCedula() {
+        return cedula;
+    }
 }
 
 

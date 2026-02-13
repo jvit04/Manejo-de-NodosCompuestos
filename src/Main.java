@@ -1,143 +1,75 @@
-
-import java.util.Comparator;
-import java.util.Random;
+import java.time.LocalDate;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("=================================================");
-        System.out.println("       SISTEMA DE GESTIÓN ACADÉMICA (TEST)       ");
-        System.out.println("=================================================");
 
-        // ---------------------------------------------------------------
-        // 1. CARGA DE DATOS DESDE LOS ARCHIVOS TXT
-        // ---------------------------------------------------------------
-        // Asegúrate de que los archivos estén en la raíz del proyecto o ajusta la ruta (ej: "src/estudiantes.txt")
-        ListaCompuesta<Estudiante, Entrega> listaCurso = CargadorDeArchivos.cargarEstudiantes("estudiantes.txt");
+        System.out.println("=== INICIANDO SISTEMA CON CARGA DE ARCHIVOS ===");
 
-        // Obtenemos la lista de nombres de actividades reales de tu archivo
-        ListaCompuesta<Actividad,Entrega> listaActividades = CargadorDeArchivos.cargarActividades("actividades.txt");
-        int totalActividadesCurso = listaActividades.getSize(); // Deberían ser 10 según tu archivo
+        // 1. Cargar Estudiantes y Actividades
+        ListaCompuesta<Estudiante, Entrega> listaEstudiantes = CargadorDeArchivos.cargarEstudiantes("src/estudiantes.txt");
+        ListaCompuesta<Actividad, Entrega> listaActividades = CargadorDeArchivos.cargarActividades("src/actividades.txt");
 
-        if (listaCurso.isEmpty() || totalActividadesCurso == 0) {
-            System.out.println("[ERROR] No se cargaron datos. Revisa las rutas de los archivos.");
+        if (listaEstudiantes.getSize() == 0 || listaActividades.getSize() == 0) {
+            System.out.println("[!] ERROR: Faltan datos base (estudiantes o actividades).");
             return;
         }
+        System.out.println("-> Base cargada: " + listaEstudiantes.getSize() + " estudiantes, " + listaActividades.getSize() + " actividades.");
 
-        // ---------------------------------------------------------------
-        // 2. SIMULACIÓN DE ENTREGAS (ASIGNAR TAREAS A LOS ESTUDIANTES)
-        // ---------------------------------------------------------------
-        System.out.println("\n[INFO] Simulando entregas para los estudiantes cargados...");
-
-        // Vamos a recorrer la lista y asignar entregas aleatorias para probar
-        NodoCompuesto<Estudiante, Entrega> actual = listaCurso.getHeader();
-        int contador = 0;
-
-        while (actual != null) {
-            Estudiante est = actual.getData();
-
-            // CASO A: Los primeros 2 estudiantes (Juan y Maria) son APLICADOS (Entregan TODO)
-            if (contador < 2) {
-                for (NodoCompuesto<Actividad,Entrega> i = listaActividades.getHeader(); i!=null;i=i.getNext() ) {
-                    listaCurso.addElementInSecondaryList(actual, new Entrega(nombreTarea));
-                }
-            }
-            // CASO B: El estudiante "Pedro Ramirez" (Índice 5 en tu txt) hará TRAMPA (Duplicados)
-            else if (est.toString().contains("Pedro") && est.toString().contains("Ramirez")) {
-                listaCurso.addToNodesList(actual, new Entrega(listaActividades.get(0))); // Taller 1
-                listaCurso.addToNodesList(actual, new Entrega(listaActividades.get(0))); // Taller 1 (REPETIDO)
-                listaCurso.addToNodesList(actual, new Entrega(listaActividades.get(1))); // Leccion 1
-            }
-            // CASO C: El resto entrega tareas al azar (entre 0 y 5 tareas)
-            else {
-                Random rand = new Random();
-                int cuantasVaAEntregar = rand.nextInt(6); // 0 a 5 entregas
-                for (int i = 0; i < cuantasVaAEntregar; i++) {
-                    listaCurso.addToNodesList(actual, new Entrega(listaActividades.get(i)));
-                }
-            }
-
-            actual = actual.getNext();
-            contador++;
-        }
-        System.out.println(">> Entregas asignadas exitosamente.\n");
-
-        // ---------------------------------------------------------------
-        // 3. PRUEBA DE FUNCIONES (VISUALIZACIÓN)
-        // ---------------------------------------------------------------
-
-        // --- PRUEBA A: PORCENTAJE DE ENTREGAS ---
-        System.out.println(":::::::::::::::::::::::::::::::::::::::::::::::::::");
-        System.out.println(" PRUEBA 1: FILTRAR POR CUMPLIMIENTO (100%)");
-        System.out.println(" (Buscamos estudiantes que entregaron las " + totalActividadesCurso + " actividades)");
-        System.out.println(":::::::::::::::::::::::::::::::::::::::::::::::::::");
-
-        ListaCompuesta<Estudiante, Entrega> perfectos =
-                listaCurso.buscarPorPorcentajeEntrega(totalActividadesCurso, 100, 100);
-
-        imprimirReporte(perfectos, totalActividadesCurso);
+        // 2. CARGAR ENTREGAS (Usando el método de tu compañera)
+        // Esto leerá entregas.txt y llenará las sublistas de los estudiantes automáticamente
+        CargadorDeArchivos.cargarEntregas("src/entregas.txt", listaEstudiantes, listaActividades);
 
 
-        System.out.println("\n:::::::::::::::::::::::::::::::::::::::::::::::::::");
-        System.out.println(" PRUEBA 2: FILTRAR POR BAJO RENDIMIENTO (0% - 40%)");
-        System.out.println(":::::::::::::::::::::::::::::::::::::::::::::::::::");
+        // =============================================================
+        //              ZONA DE PRUEBAS DE TUS FUNCIONES
+        // =============================================================
 
-        ListaCompuesta<Estudiante, Entrega> vagos =
-                listaCurso.buscarPorPorcentajeEntrega(totalActividadesCurso, 0, 40);
+        // PRUEBA A: Actividades Vencidas / Vigentes
+        System.out.println("\n[A] PRUEBA DE FECHAS (Corte: 01-Abril-2026)");
+        LocalDate fechaCorte = LocalDate.of(2026, 4, 1);
+        CompararActividadesFechaEntrega compFechas = new CompararActividadesFechaEntrega();
+        Actividad actRef = new Actividad("Ref", "Ref", fechaCorte, 0, "Ref");
 
-        imprimirReporte(vagos, totalActividadesCurso);
+        ListaCompuesta<Actividad, Entrega> vencidas = listaActividades.buscarActividadesVencidas(compFechas, actRef);
+        System.out.println("   - Actividades POSTERIORES a Abril (Futuras): " + vencidas.getSize());
+
+        ListaCompuesta<Actividad, Entrega> vigentes = listaActividades.buscarActividadesVigentes(compFechas, actRef);
+        System.out.println("   - Actividades ANTERIORES a Abril (Pasadas): " + vigentes.getSize());
 
 
-        // --- PRUEBA B: DUPLICADOS ---
-        System.out.println("\n:::::::::::::::::::::::::::::::::::::::::::::::::::");
-        System.out.println(" PRUEBA 3: DETECTAR DUPLICADOS (TRAMPOSOS)");
-        System.out.println(":::::::::::::::::::::::::::::::::::::::::::::::::::");
+        // PRUEBA B: Estudiantes con Entregas Duplicadas
+        // (En el txt puse a Juan Perez y Ana Gomez con notas repetidas a propósito)
+        System.out.println("\n[B] PRUEBA DE DUPLICADOS");
+        CompararEntregasxNotas compNotas = new CompararEntregasxNotas();
 
-        Comparator<Entrega> comp = new Comparator<Entrega>() {
-            @Override
-            public int compare(Entrega o1, Entrega o2) {
-                return o1.toString().compareTo(o2.toString());
-            }
-        };
+        ListaCompuesta<Estudiante, Entrega> repetidos = listaEstudiantes.buscarEstudiantesConDuplicadosEnSecundaria(compNotas);
 
-        ListaCompuesta<Estudiante, Entrega> tramposos =
-                listaCurso.buscarEstudiantesConDuplicadosEnSecundaria(comp);
-
-        if (tramposos != null && !tramposos.isEmpty()) {
-            System.out.println(">> ¡ALERTA! Se encontraron entregas repetidas:");
-            imprimirReporte(tramposos, totalActividadesCurso);
+        System.out.println("   Estudiantes con notas idénticas en sus entregas:");
+        if(!repetidos.isEmpty()){
+            System.out.println(repetidos); // Debería salir Juan Perez y Ana Gomez según mi txt
         } else {
-            System.out.println(">> No se encontraron duplicados.");
-        }
-    }
-
-    // ========================================================
-    // MÉTODO AUXILIAR PARA VER LOS RESULTADOS BONITOS
-    // ========================================================
-    public static void imprimirReporte(ListaCompuesta<Estudiante, Entrega> lista, int total) {
-        if (lista == null || lista.isEmpty()) {
-            System.out.println("   (Lista vacía: No hubo coincidencias)");
-            return;
+            System.out.println("   No se encontraron duplicados.");
         }
 
-        NodoCompuesto<Estudiante, Entrega> nodo = lista.getHeader();
-        while (nodo != null) {
-            Estudiante e = nodo.getData();
-            int entregas = 0;
-            String detalle = "";
 
-            if (nodo.getReferenciaLista() != null) {
-                entregas = nodo.getReferenciaLista().getSize();
-                detalle = nodo.getReferenciaLista().toString(); // Asume que tu toString de lista es limpio
-            }
+        // PRUEBA C: Rendimiento por Porcentaje
+        System.out.println("\n[C] PRUEBA DE PORCENTAJE DE CUMPLIMIENTO");
+        // En el txt, Maria Lopez tiene 5 entregas. Si hay 10 actividades en total, tiene 50%.
+        int totalActividades = listaActividades.getSize();
+        double min = 10.0;
+        double max = 60.0; // Buscamos gente que tenga entre 10% y 60% de avance
 
-            double porc = ((double)entregas/total) * 100;
+        System.out.println("   Buscando estudiantes con avance entre " + min + "% y " + max + "%:");
 
-            System.out.printf("-> %-20s | Cumplimiento: %5.1f%% (%d/%d)\n",
-                    e.toString(), porc, entregas, total);
-            // Si quieres ver qué entregaron, descomenta la siguiente linea:
-            // System.out.println("     Entregas: " + detalle);
+        ListaCompuesta<Estudiante, Entrega> cumplidos = listaEstudiantes.buscarPorPorcentajeEntrega(totalActividades, min, max);
 
-            nodo = nodo.getNext();
+        NodoCompuesto<Estudiante, Entrega> actual = cumplidos.getHeader();
+        while(actual != null) {
+            int n = actual.getReferenciaLista().getSize();
+            double p = ((double)n / totalActividades) * 100;
+            System.out.println("   -> " + actual.getData().getNombre() + " " + actual.getData().getApellido()
+                    + " (Entregas: " + n + " | " + String.format("%.1f", p) + "%)");
+            actual = actual.getNext();
         }
     }
 }
