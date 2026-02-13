@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class Actividad {
+public class Actividad implements Serializable {
     //Atributos
     private String nombre;
     private String descripcion;
@@ -9,13 +10,14 @@ public class Actividad {
     private LocalDate fechaLimite;
     private int notaMaxima;
 
-//Constructores
-    public Actividad(String nombre, String descripcion, LocalDate fechaLimite, int notaMaxima) {
+//Constructor
+    public Actividad(String nombre, String descripcion, LocalDate fechaLimite, int notaMaxima, String tipo) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.fechaEnvio = LocalDate.now();
         this.fechaLimite = fechaLimite;
         this.notaMaxima = notaMaxima;
+        this.tipo = tipo;
     }
 
     public Actividad(int notaMaxima) {

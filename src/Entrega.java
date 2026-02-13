@@ -1,6 +1,8 @@
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class Entrega {
+public class Entrega implements Serializable {
     //Atributos
     private double nota;
     private String contenido;

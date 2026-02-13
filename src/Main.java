@@ -1,59 +1,51 @@
+import java.time.LocalDate;
+
 public class Main {
     public static void main(String[] args) {
 
-        ListaCompuesta<Estudiante, Entrega> L = new ListaCompuesta<>();
-        NodoCompuesto<Estudiante, Entrega> p;
+        System.out.println("=== INICIANDO CARGA DE DATOS ===");
 
-        // Estudiante 1 y sus entregas
-        L.add(p = new NodoCompuesto<>(new Estudiante("Gabriel", "Andrade")));
-        L.addElementInSecondaryList(p, new Entrega(30));
-        L.addElementInSecondaryList(p, new Entrega(50));
-        
-        // Estudiante 2 y sus entregas
-        L.add(p = new NodoCompuesto<>(new Estudiante("Camila", "Aguirre")));
-        // esto significa al nodo p: le agrego una nueva entrega. a una lista que crea el metodo automaticamente
-        L.addElementInSecondaryList(p, new Entrega(20));
-        L.addElementInSecondaryList(p, new Entrega(90));
-        L.addElementInSecondaryList(p, new Entrega(20)); 
+        // 1. Cargar Estudiantes desde archivo
+        // Asegúrate de que el nombre del archivo coincida con el que creaste
+        ListaCompuesta<Estudiante, Entrega> listaEstudiantes = CargadorDeArchivos.cargarEstudiantes("src/estudiantes.txt");
 
-        L.add(p = new NodoCompuesto<>(new Estudiante("María", "Vélez")));
-        L.addElementInSecondaryList(p, new Entrega(10));
-        L.addElementInSecondaryList(p, new Entrega(40));
-        L.addElementInSecondaryList(p, new Entrega(10)); 
+        if (listaEstudiantes.getSize() > 0) {
+            System.out.println("\n--> Estudiantes cargados exitosamente (" + listaEstudiantes.getSize() + "):");
+            System.out.println(listaEstudiantes); // Usa tu método toString() de la lista
+        } else {
+            System.out.println("\n[!] No se pudieron cargar estudiantes o la lista está vacía.");
+        }
 
-        System.out.println("Lista Completa:");
-        System.out.println(L);
+        // 2. Cargar Actividades desde archivo
+        ListaCompuesta<Actividad, Entrega> listaActividades = CargadorDeArchivos.cargarActividades("src/actividades.txt");
 
-        // Retornar todos los elementos de la lista principal cuyos elementos de l listas secundarias cumplan con un criterio dado (
-        // Ej., dada una lista de Estudiantes, retornar una sublista de Estudiantes cuyas entregas tengan calificacion debajo de un cierto valor).
-        Entrega ebuscar = new Entrega (50);
-        ListaCompuesta<Estudiante, Entrega> Lnueva = L.buscarTodosMenoresEnListaSecundaria (new compararEntregasxNotas(), ebuscar);
-        System.out.println("Buscar todos las entragas con notas menores que 50:");
-        System.out.println(Lnueva);
+        if (listaActividades.getSize() > 0) {
+            System.out.println("\n--> Actividades cargadas exitosamente (" + listaActividades.getSize() + "):");
+            // Iteramos manualmente para ver que los datos (incluido el TIPO) se cargaron bien
+            NodoCompuesto<Actividad, Entrega> actual = listaActividades.getHeader();
+            while(actual != null) {
+                Actividad act = actual.getData();
+                System.out.println(" - " + act.getNombre() + " | Fecha: " + act.getFechaLimite() + " | Nota: " + act.getNotaMaxima());
+                // Si tienes un getter para tipo, podrías imprimirlo también:
+                // System.out.println("   Tipo: " + act.getTipo());
+                actual = actual.getNext();
+            }
+        } else {
+            System.out.println("\n[!] No se pudieron cargar actividades o la lista está vacía.");
+        }
 
-        ListaCompuesta<Entrega, Estudiante> listaNotas1 = new ListaCompuesta<>();
-        listaNotas1.add(new NodoCompuesto<>(new Entrega(10)));
-        listaNotas1.add(new NodoCompuesto<>(new Entrega(20)));
-        listaNotas1.add(new NodoCompuesto<>(new Entrega(30)));
+        // 3. Prueba de funcionalidad con los datos cargados (Ejemplo: Buscar actividades vigentes)
+        System.out.println("\n=== PRUEBA DE FUNCIONALIDAD CON DATOS CARGADOS ===");
+        if (listaActividades.getSize() > 0) {
+            LocalDate hoy = LocalDate.now();
+            System.out.println("Buscando actividades posteriores a HOY (" + hoy + ")...");
 
-        ListaCompuesta<Entrega, Estudiante> listaNotas2 = new ListaCompuesta<>();
-        listaNotas2.add(new NodoCompuesto<>(new Entrega(20))); 
-        listaNotas2.add(new NodoCompuesto<>(new Entrega(30))); 
-        listaNotas2.add(new NodoCompuesto<>(new Entrega(40))); 
+            CompararActividadesFechaEntrega comparador = new CompararActividadesFechaEntrega();
+            // Creamos una actividad dummy solo para pasar la fecha de corte
+            Actividad referencia = new Actividad("Ref", "Ref", hoy, 0, "Ref");
 
-        compararEntregasxNotas compNotas = new compararEntregasxNotas();
-
-        System.out.println("\nUnion de listas de notas (10,20,30) y (20,30,40)");
-        System.out.println(listaNotas1.union(listaNotas2, compNotas));
-
-        System.out.println("\nInterseccion de listas de notas (10,20,30) con (20,30,40)");
-        System.out.println(listaNotas1.interseccion(listaNotas2, compNotas));
-
-        System.out.println("\nEstudiantes con notas duplicadas:");
-            
-        ListaCompuesta<Estudiante, Entrega> repetidos = L.buscarEstudiantesConDuplicadosEnSecundaria(compNotas);
-        
-        System.out.println(repetidos);
+            ListaCompuesta<Actividad, Entrega> futuras = listaActividades.buscarActividadesVencidas(comparador, referencia);
+            System.out.println(futuras);
+        }
     }
 }
-        

@@ -1,4 +1,6 @@
-public class Estudiante {
+import java.io.Serializable;
+
+public class Estudiante implements Serializable {
     //Atributos
     private String codigo;
     private String cedula;
@@ -10,8 +12,8 @@ public class Estudiante {
         CodigoEstudiantil codigoEstudiantil = new CodigoEstudiantil();
         this.codigo = codigoEstudiantil.generarCodigoNuevo();
         this.nombre = nombre;
-        this.cedula = cedula;
         this.apellido = apellido;
+        this.cedula = cedula;
     }
 
     //Método toString
