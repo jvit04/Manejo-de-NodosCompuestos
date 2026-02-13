@@ -27,7 +27,7 @@ public class CargadorDeArchivos {
     }
 
     // Método estático para no tener que instanciar la clase
-    public static ListaCompuesta<Actividad, Entrega> cargarActividades(String rutaArchivo) {
+    public static ListaCompuesta<Actividad,Entrega> cargarActividades(String rutaArchivo) {
         ListaCompuesta<Actividad, Entrega> lista = new ListaCompuesta<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(rutaArchivo))) {
