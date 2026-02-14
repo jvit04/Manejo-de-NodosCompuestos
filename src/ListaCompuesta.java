@@ -233,6 +233,48 @@ class ListaCompuesta <E, F> implements Serializable {
         return fechasMenores;
     }
 
+    //Método que retorna una lista de la unión de dos listas pero SIN repetidos.
+    public ListaCompuesta<E, F> unirListasSinRepetidos(ListaCompuesta<E,F> lista) {
+        if (this.isEmpty()) return lista;
+        if (lista.isEmpty()) return this;
+        ListaCompuesta<E, F> nuevaLista = new ListaCompuesta<>();
+        for (NodoCompuesto<E, F> i = this.getHeader(); i != null; i = i.getNext()) {
+            if (!existeDato(nuevaLista,i.getData())) {
+                nuevaLista.add(new NodoCompuesto<>(i.getData()));
+                nuevaLista.size++;
+            }
+        }
+        for (NodoCompuesto<E, F> i = lista.getHeader(); i != null; i = i.getNext()) {
+            if (!existeDato(nuevaLista,i.getData())) {
+                nuevaLista.add(new NodoCompuesto<>(i.getData()));
+                nuevaLista.size++;
+            }
+        }
+        return nuevaLista;
+    }
+
+    //Método que devuelve la interseccion de dos listas, es decir, une dos listas en una de retorno,
+    //pero esta solo cuenta con los elementos que se encuentran en ambas listas.
+    public ListaCompuesta<E,F> devolverInsterseccion(ListaCompuesta<E,F> lista){
+        ListaCompuesta<E,F> unidaSinRepeticion = this.unirListasSinRepetidos(lista);
+        ListaCompuesta <E,F> interserccion = new ListaCompuesta<>();
+        for(NodoCompuesto <E,F> i = unidaSinRepeticion.header; i!=null; i=i.getNext()){
+            if(unidaSinRepeticion.existeDato(this,i.getData())&& unidaSinRepeticion.existeDato(lista, i.getData())){
+                interserccion.add(i);
+            }
+        }
+        return interserccion;
+    }
+    //Método que devuelve boolean si detecta que un elemento esta en una lista o no.
+    public boolean existeDato(ListaCompuesta<E,F> listaCompuesta,E data){
+        for (NodoCompuesto<E,F> i =listaCompuesta.getHeader();i!=null;i=i.getNext()){
+            if(i.getData().equals(data)){
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
 
 

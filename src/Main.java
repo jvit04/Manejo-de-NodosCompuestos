@@ -15,7 +15,7 @@ public class Main {
         }
         System.out.println("-> Base cargada: " + listaEstudiantes.getSize() + " estudiantes, " + listaActividades.getSize() + " actividades.");
 
-        // 2. CARGAR ENTREGAS (Usando el método de tu compañera)
+        // 2. CARGAR ENTREGAS
         // Esto leerá entregas.txt y llenará las sublistas de los estudiantes automáticamente
         CargadorDeArchivos.cargarEntregas("src/entregas.txt", listaEstudiantes, listaActividades);
 
