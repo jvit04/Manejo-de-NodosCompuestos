@@ -74,10 +74,12 @@ public class CargadorDeArchivos {
                     }
 
                     // 2. Buscar la Actividad por Nombre
+                    NodoCompuesto<Actividad,Entrega> nodoActividad = null; //nodo para guardar el valor de la actividad a asociar con la entrega
                     Actividad actEncontrada = null;
                     for(NodoCompuesto<Actividad, Entrega> a = listaActividades.getHeader(); a != null; a = a.getNext()){
                         if(a.getData().getNombre().equalsIgnoreCase(nombreActBusq)){
                             actEncontrada = a.getData();
+                            nodoActividad = a;
                             break;
                         }
                     }
@@ -89,6 +91,7 @@ public class CargadorDeArchivos {
 
                         // Agregamos a la lista secundaria del estudiante
                         listaEstudiantes.addElementInSecondaryList(nodoEst, nuevaEntrega);
+                        listaActividades.addElementInSecondaryList(nodoActividad, nuevaEntrega);
                     }
                 }
             }

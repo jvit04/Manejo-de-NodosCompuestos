@@ -1,13 +1,15 @@
 import java.time.LocalDate;
 
 public class Main {
+    // 1. Cargar Estudiantes y Actividades
+    private static ListaCompuesta<Estudiante, Entrega> listaEstudiantes = CargadorDeArchivos.cargarEstudiantes("src/estudiantes.txt");
+    private static ListaCompuesta<Actividad, Entrega> listaActividades = CargadorDeArchivos.cargarActividades("src/actividades.txt");
+
     public static void main(String[] args) {
 
         System.out.println("=== INICIANDO SISTEMA CON CARGA DE ARCHIVOS ===");
 
-        // 1. Cargar Estudiantes y Actividades
-        ListaCompuesta<Estudiante, Entrega> listaEstudiantes = CargadorDeArchivos.cargarEstudiantes("src/estudiantes.txt");
-        ListaCompuesta<Actividad, Entrega> listaActividades = CargadorDeArchivos.cargarActividades("src/actividades.txt");
+
 
         if (listaEstudiantes.getSize() == 0 || listaActividades.getSize() == 0) {
             System.out.println("[!] ERROR: Faltan datos base (estudiantes o actividades).");
@@ -30,10 +32,10 @@ public class Main {
         CompararActividadesFechaEntrega compFechas = new CompararActividadesFechaEntrega();
         Actividad actRef = new Actividad("Ref", "Ref", fechaCorte, 0, "Ref");
 
-        ListaCompuesta<Actividad, Entrega> vencidas = listaActividades.buscarActividadesVencidas(compFechas, actRef);
+        ListaCompuesta<Actividad, Entrega> vencidas = listaActividades.buscarMayoresPrincipal(compFechas, actRef);
         System.out.println("   - Actividades POSTERIORES a la fecha (Futuras): " + vencidas.getSize());
 
-        ListaCompuesta<Actividad, Entrega> vigentes = listaActividades.buscarActividadesVigentes(compFechas, actRef);
+        ListaCompuesta<Actividad, Entrega> vigentes = listaActividades.buscarMenoresPrincipal(compFechas, actRef);
         System.out.println("   - Actividades ANTERIORES a la fecha (Pasadas): " + vigentes.getSize());
 
 
@@ -71,5 +73,19 @@ public class Main {
                     + " (Entregas: " + n + " | " + String.format("%.1f", p) + "%)");
             actual = actual.getNext();
         }
+
+        System.out.println("------------------Buscar Calificaciones con calificaciones menores---------------------------");
+        Entrega entrega = new Entrega(7);
+        CompararEntregasxNotas compararEntregasxNotas = new CompararEntregasxNotas();
+        System.out.println("\n---Retornando estudiantes---");
+       System.out.println(listaEstudiantes.buscarTodosMenoresEnListaSecundaria(compararEntregasxNotas,entrega));
+        System.out.println("\n---Retornando actividades---");
+        System.out.println(listaActividades.buscarTodosMenoresEnListaSecundaria(compararEntregasxNotas,entrega));
+
+
+        System.out.println("------------------Buscar Entregas Vencidas sin nota---------------------------");
+        Entrega entrega1 = new Entrega(-1);//Notas con valor -1 significan nulas.
+        System.out.println(vencidas.buscarIgualesEnListaSecundaria(compararEntregasxNotas, entrega1));
     }
+
 }

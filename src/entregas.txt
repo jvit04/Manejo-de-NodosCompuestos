@@ -13,3 +13,4 @@
 
 0987654321,Proyecto P1,18,Buena interfaz
 0987654321,Proyecto P1,18,ERROR: Subido dos veces (Prueba Duplicados)
+0987654321,Proyecto P2,-1,Sin calificar

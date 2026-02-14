@@ -19,16 +19,32 @@ public class Entrega implements Serializable {
         this.estudiante = estudiante;
         this.actividad = actividad;
     }
-
-
-    //Getters y Setters
+    //Entregas de valor -1 significan que no han sido calificadas.
     public Entrega(double nota) {
         this.nota = nota;
     }
+
+    //Getters y Setters
     public double getNota() {
         return nota;
     }
-    public String toString(){ return "**" + this.nota + "**";}
+    @Override
+    public String toString() {
+        // Recuperamos los datos de forma segura (manejando nulos)
+        String nombreEst = (estudiante != null) ? estudiante.getNombre() + " " + estudiante.getApellido() : "N/A";
+        String nombreAct = (actividad != null) ? actividad.getNombre() : "N/A";
+        String fecha = (fechaEntrega != null) ? fechaEntrega.toString() : "N/A";
+        String comment = (comentarios != null) ? comentarios : "Sin comentarios";
+
+        return "Entrega {" +
+                "Actividad='" + nombreAct + '\'' +
+                ", Estudiante='" + nombreEst + '\'' +
+                ", Nota=" + nota +
+                ", Fecha=" + fecha +
+                ", Comentarios='" + comment + '\'' +
+                '}';
+    }
+
 
     //Método equals para la clase Entrega, su implementación fue necesaria, ya que es la forma la que se reconoce
     //si la nota de dos Entregas son iguales.

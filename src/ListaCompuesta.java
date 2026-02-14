@@ -72,16 +72,70 @@ class ListaCompuesta <E, F> implements Serializable {
         
     public ListaCompuesta<E, F> buscarTodosMenoresEnListaSecundaria(Comparator<F> c, F data){        
         ListaCompuesta<E, F> nueva = new ListaCompuesta<>();
-        for (NodoCompuesto<E, F>p = this.header; p!=null; p=p.getNext())
-        {
+        for (NodoCompuesto<E, F>p = this.header; p!=null; p=p.getNext()) {
             ListaCompuesta<F, F> sublista = p.getReferenciaLista();
-            if(sublista.buscarPrimero(c, data)!=null)
-                nueva.add(new NodoCompuesto<>(p.getData()));
+            if(sublista!=null){
+                if(sublista.buscarPrimero(c, data)!=null)
+                    nueva.add(new NodoCompuesto<>(p.getData()));
+            }
+        }
+        return nueva;}
+
+    public ListaCompuesta<F,F> buscarIgualesEnListaSecundaria(Comparator<F> c, F data){
+        ListaCompuesta<F, F> nueva = new ListaCompuesta<>();
+        for (NodoCompuesto<E, F>p = this.header; p!=null; p=p.getNext()) {
+            ListaCompuesta<F, F> sublista = p.getReferenciaLista();
+            if(sublista!=null){
+                for (NodoCompuesto<F,F> i = sublista.header;i!=null;i=i.getNext()){
+                    if(c.compare(i.getData(), data)== 0) {
+                        nueva.add(new NodoCompuesto<>(i.getData()));
+                    }
+                }
+
+            }
         }
         return nueva;
     }
+
+
+//metodo que devuelve valores menores de la lista principal
+    public ListaCompuesta<E,F> buscarMenoresPrincipal(Comparator<E> c,E data){
+        ListaCompuesta<E,F> nueva = new ListaCompuesta<>();
+        for (NodoCompuesto<E, F> p = header; p!=null; p=p.getNext()){
+            // if que busca valores menores
+            if(c.compare(p.getData(), data)< 0) nueva.add(new NodoCompuesto<>(p.getData()));
+        }
+        return nueva;
+    }
+    //metodo que devuelve valores mayores de la lista principal
+    public ListaCompuesta<E,F> buscarMayoresPrincipal(Comparator<E> c,E data){
+        ListaCompuesta<E,F> nueva = new ListaCompuesta<>();
+        for (NodoCompuesto<E, F> p = header; p!=null; p=p.getNext()){
+            // if que busca valores mayores
+            if(c.compare(p.getData(), data)> 0) {
+                NodoCompuesto<E, F> nodoNuevo = new NodoCompuesto<>(p.getData());
+                //Le pasamos la referencia de la sublista del nodo original
+                nodoNuevo.SetListaCompuesta(p.getReferenciaLista());
+                //lo agregamos
+                nueva.add(nodoNuevo);
+            }
+
+        }
+        return nueva;
+    }
+    //metodo que devuelve valores iguales de la lista principal
+    public ListaCompuesta<E,F> buscarIgualesPrincipal(Comparator<E> c,E data){
+        ListaCompuesta<E,F> nueva = new ListaCompuesta<>();
+        for (NodoCompuesto<E, F> p = header; p!=null; p=p.getNext()){
+            // if
+            if(c.compare(p.getData(), data)== 0) nueva.add(new NodoCompuesto<>(p.getData()));
+        }
+        return nueva;
+    }
+
+
     
-    // tetornar todos los elementos de la lista principal que coincidan con
+    // retornar todos los elementos de la lista principal que coincidan con
     public ListaCompuesta<E, F> buscarEnListaPrincipal(Comparator<E> c, E data) {
         ListaCompuesta<E, F> resultado = new ListaCompuesta<>(); // la que vamos a devolver
         for (NodoCompuesto<E, F> p = this.header; p != null; p = p.getNext()) {
@@ -114,14 +168,13 @@ class ListaCompuesta <E, F> implements Serializable {
             for (NodoCompuesto<E, F> q = lista2.getHeader(); q != null; q = q.getNext()) {
                 // usamos buscarPrimero para ver si ya existe
                 if (resultado.buscarExacto(c, q.getData()) == null) {
-                    // solo si buscarprimero no nos devuelve un nodo, es decir no se encuentra en la lista, lo agregamos
+                    // solo si buscar primero no nos devuelve un nodo, es decir no se encuentra en la lista, lo agregamos
                     resultado.add(new NodoCompuesto<>(q.getData()));
                 }
             }
         }
         return resultado;
     }
-
     
     // la interseccion seria los elementos que coincicen
     public ListaCompuesta<E, F> interseccion(ListaCompuesta<E, F> lista2, Comparator<E> c) {
@@ -207,31 +260,7 @@ class ListaCompuesta <E, F> implements Serializable {
         return this.size == 0 && this.header == null;}
         //Este metodo está diseñado para funcionar con el comparador de la clase CompararActividadesFechaEntrega
         //Su función es devolver una lista de las actividades que sean posteriores a una fecha dada.
-        public ListaCompuesta<E, F> buscarActividadesVencidas(Comparator<E> c, E data) {
-            ListaCompuesta<E, F> fechasMayores = new ListaCompuesta<>();
-            E data1;
-            for (NodoCompuesto<E, F> p = header; p != null; p = p.getNext()) {
-                data1 = p.getData();
-                if (c.compare(data1, data) > 0) {
-                    fechasMayores.add(new NodoCompuesto<>(data1));
-                }
-            }
-            return fechasMayores;
-        }
 
-    //Este metodo está diseñado para funcionar con el comparador de la clase CompararActividadesFechaEntrega
-    //Su función es devolver una lista de las actividades que sean anteriores a una fecha dada.
-    public ListaCompuesta<E, F> buscarActividadesVigentes(Comparator<E> c, E data) {
-        ListaCompuesta<E, F> fechasMenores = new ListaCompuesta<>();
-        E data1;
-        for (NodoCompuesto<E, F> p = header; p != null; p = p.getNext()) {
-            data1 = p.getData();
-            if (c.compare(data1, data) < 0) {
-                fechasMenores.add(new NodoCompuesto<>(data1));
-            }
-        }
-        return fechasMenores;
-    }
 
     //Método que retorna una lista de la unión de dos listas pero SIN repetidos.
     public ListaCompuesta<E, F> unirListasSinRepetidos(ListaCompuesta<E,F> lista) {
@@ -275,7 +304,10 @@ class ListaCompuesta <E, F> implements Serializable {
         return false;
     }
 
-}
+
+ }
+
+
 
 
 
