@@ -123,26 +123,15 @@ class ListaCompuesta <E, F> implements Serializable {
         }
         return nueva;
     }
-    //metodo que devuelve valores iguales de la lista principal
-    public ListaCompuesta<E,F> buscarIgualesPrincipal(Comparator<E> c,E data){
-        ListaCompuesta<E,F> nueva = new ListaCompuesta<>();
-        for (NodoCompuesto<E, F> p = header; p!=null; p=p.getNext()){
-            // if
-            if(c.compare(p.getData(), data)== 0) nueva.add(new NodoCompuesto<>(p.getData()));
-        }
-        return nueva;
-    }
 
-
-    
     // retornar todos los elementos de la lista principal que coincidan con
-    public ListaCompuesta<E, F> buscarEnListaPrincipal(Comparator<E> c, E data) {
+    public ListaCompuesta<E, F> buscarIgualesPrincipal(Comparator<E> c, E data) {
         ListaCompuesta<E, F> resultado = new ListaCompuesta<>(); // la que vamos a devolver
         for (NodoCompuesto<E, F> p = this.header; p != null; p = p.getNext()) {
-            // comparamos el dato principal 
+            // comparamos el dato principal
             if (c.compare(p.getData(), data) == 0) {
                 // Si coincide, lo agregamos a la lista resultado
-                resultado.add(new NodoCompuesto<>(p.getData())); 
+                resultado.add(new NodoCompuesto<>(p.getData()));
             }
         }
         return resultado;
@@ -232,12 +221,8 @@ class ListaCompuesta <E, F> implements Serializable {
                 listaResultado.add(nodoEstudiante);}
             actual = actual.getNext();}
         return listaResultado;}
-    public NodoCompuesto<E, F> searchNode(NodoCompuesto<E, F> elemento) {
-        for (NodoCompuesto<E, F> i = this.header; i != null; i = i.getNext()) {
-            if (i.getData().equals(elemento.getData())) return i;
-        }
-        return null;
-    }
+
+
     //Método trabajado en clase, devuelve el nodo anterior a un nodo dado como parametro EN la lista PRINCIPAL
     public NodoCompuesto <E,F> getAnteriorListaPrincipal(NodoCompuesto <E,F> elemento) {
         for (NodoCompuesto <E,F> i = this.getHeader(); i != null; i = i.getNext()) {
@@ -262,49 +247,21 @@ class ListaCompuesta <E, F> implements Serializable {
         //Su función es devolver una lista de las actividades que sean posteriores a una fecha dada.
 
 
-    //Método que retorna una lista de la unión de dos listas pero SIN repetidos.
-    public ListaCompuesta<E, F> unirListasSinRepetidos(ListaCompuesta<E,F> lista) {
-        if (this.isEmpty()) return lista;
-        if (lista.isEmpty()) return this;
-        ListaCompuesta<E, F> nuevaLista = new ListaCompuesta<>();
-        for (NodoCompuesto<E, F> i = this.getHeader(); i != null; i = i.getNext()) {
-            if (!existeDato(nuevaLista,i.getData())) {
-                nuevaLista.add(new NodoCompuesto<>(i.getData()));
-                nuevaLista.size++;
-            }
-        }
-        for (NodoCompuesto<E, F> i = lista.getHeader(); i != null; i = i.getNext()) {
-            if (!existeDato(nuevaLista,i.getData())) {
-                nuevaLista.add(new NodoCompuesto<>(i.getData()));
-                nuevaLista.size++;
-            }
-        }
-        return nuevaLista;
-    }
 
-    //Método que devuelve la interseccion de dos listas, es decir, une dos listas en una de retorno,
-    //pero esta solo cuenta con los elementos que se encuentran en ambas listas.
-    public ListaCompuesta<E,F> devolverInsterseccion(ListaCompuesta<E,F> lista){
-        ListaCompuesta<E,F> unidaSinRepeticion = this.unirListasSinRepetidos(lista);
-        ListaCompuesta <E,F> interserccion = new ListaCompuesta<>();
-        for(NodoCompuesto <E,F> i = unidaSinRepeticion.header; i!=null; i=i.getNext()){
-            if(unidaSinRepeticion.existeDato(this,i.getData())&& unidaSinRepeticion.existeDato(lista, i.getData())){
-                interserccion.add(i);
+    //Metodo que devuelve la diferencia entre 2 listas. Servirá para encontrar las Entregas Incompletas.
+    public ListaCompuesta<E,F> diferencia(ListaCompuesta<E,F> lista2, Comparator<E> comparator){
+        //Lista donde se guardará la diferencia
+        ListaCompuesta<E,F> diferencia = new ListaCompuesta<>();
+        //Recorrido de la lista principal
+        for (NodoCompuesto<E,F> i =this.getHeader();i!=null;i=i.getNext()) {
+            E datoActual= i.getData();
+            //Usamos el metodo buscarExacto para validar que exista en B
+            if(lista2.buscarExacto(comparator,datoActual)==null){
+                diferencia.add(new NodoCompuesto<>(datoActual));//al no existir se agrega a la lista
             }
         }
-        return interserccion;
+        return diferencia;
     }
-    //Método que devuelve boolean si detecta que un elemento esta en una lista o no.
-    public boolean existeDato(ListaCompuesta<E,F> listaCompuesta,E data){
-        for (NodoCompuesto<E,F> i =listaCompuesta.getHeader();i!=null;i=i.getNext()){
-            if(i.getData().equals(data)){
-                return true;
-            }
-        }
-        return false;
-    }
-
-
  }
 
 
