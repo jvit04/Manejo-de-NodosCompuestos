@@ -45,6 +45,25 @@ public class Entrega implements Serializable {
                 '}';
     }
 
+    public String getContenido() {
+        return contenido;
+    }
+
+    public LocalDate getFechaEntrega() {
+        return fechaEntrega;
+    }
+
+    public String getComentarios() {
+        return comentarios;
+    }
+
+    public Estudiante getEstudiante() {
+        return estudiante;
+    }
+
+    public Actividad getActividad() {
+        return actividad;
+    }
 
     //Método equals para la clase Entrega, su implementación fue necesaria, ya que es la forma la que se reconoce
     //si la nota de dos Entregas son iguales.

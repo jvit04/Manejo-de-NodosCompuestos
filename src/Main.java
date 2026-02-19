@@ -10,7 +10,6 @@ public class Main {
         System.out.println("=== INICIANDO SISTEMA CON CARGA DE ARCHIVOS ===");
 
 
-
         if (listaEstudiantes.getSize() == 0 || listaActividades.getSize() == 0) {
             System.out.println("[!] ERROR: Faltan datos base (estudiantes o actividades).");
             return;
@@ -47,7 +46,7 @@ public class Main {
         ListaCompuesta<Estudiante, Entrega> repetidos = listaEstudiantes.buscarEstudiantesConDuplicadosEnSecundaria(compNotas);
 
         System.out.println("   Estudiantes con notas idénticas en sus entregas:");
-        if(!repetidos.isEmpty()){
+        if (!repetidos.isEmpty()) {
             System.out.println(repetidos); // Debería salir Juan Perez y Ana Gomez según mi txt
         } else {
             System.out.println("   No se encontraron duplicados.");
@@ -66,9 +65,9 @@ public class Main {
         ListaCompuesta<Estudiante, Entrega> cumplidos = listaEstudiantes.buscarPorPorcentajeEntrega(totalActividades, min, max);
 
         NodoCompuesto<Estudiante, Entrega> actual = cumplidos.getHeader();
-        while(actual != null) {
+        while (actual != null) {
             int n = actual.getReferenciaLista().getSize();
-            double p = ((double)n / totalActividades) * 100;
+            double p = ((double) n / totalActividades) * 100;
             System.out.println("   -> " + actual.getData().getNombre() + " " + actual.getData().getApellido()
                     + " (Entregas: " + n + " | " + String.format("%.1f", p) + "%)");
             actual = actual.getNext();
@@ -78,14 +77,79 @@ public class Main {
         Entrega entrega = new Entrega(7);
         CompararEntregasxNotas compararEntregasxNotas = new CompararEntregasxNotas();
         System.out.println("\n---Retornando estudiantes---");
-       System.out.println(listaEstudiantes.buscarTodosMenoresEnListaSecundaria(compararEntregasxNotas,entrega));
+        System.out.println(listaEstudiantes.buscarTodosMenoresEnListaSecundaria(compararEntregasxNotas, entrega));
         System.out.println("\n---Retornando actividades---");
-        System.out.println(listaActividades.buscarTodosMenoresEnListaSecundaria(compararEntregasxNotas,entrega));
+        System.out.println(listaActividades.buscarTodosMenoresEnListaSecundaria(compararEntregasxNotas, entrega));
 
 
         System.out.println("------------------Buscar Entregas Vencidas sin nota---------------------------");
         Entrega entrega1 = new Entrega(-1);//Notas con valor -1 significan nulas.
         System.out.println(vencidas.buscarIgualesEnListaSecundaria(compararEntregasxNotas, entrega1));
+
+        System.out.println("------------------Diferencia---------------------------");
+        ComparadorPorNombre comparadorPorNombre = new ComparadorPorNombre();
+        NodoCompuesto<Estudiante, Entrega> estudianteActual = listaEstudiantes.getHeader();
+        // 1. Obtenemos su lista de entregas (Tipo Entrega)
+        ListaCompuesta<Entrega, Entrega> entregasDelEstudiante = estudianteActual.getReferenciaLista();
+
+// 2. Creamos una lista TEMPORAL de Actividades (para igualar los tipos)
+        ListaCompuesta<Actividad, Entrega> actividadesQueSiEntrego = new ListaCompuesta<>();
+
+        NodoCompuesto<Entrega, Entrega> nodoEnt = entregasDelEstudiante.getHeader();
+        while (nodoEnt != null) {
+            entrega = nodoEnt.getData();
+
+            // Creamos una "Actividad fantasma" usando el nombre que viene en la entrega.
+            // Para esto se ajusto el constructor para que se pueda crear actividades con solo el nombre de la actividad.
+            Actividad actTemporal = new Actividad(entrega.getActividad().getNombre());
+
+            actividadesQueSiEntrego.add(new NodoCompuesto<>(actTemporal));
+            nodoEnt = nodoEnt.getNext();
+        }
+
+// 3. Como ambas listas son de tipo <Actividad, Entrega>, el método diferencia funcionará perfecto
+        ListaCompuesta<Actividad, Entrega> actividadesFaltantes = listaActividades.diferencia(actividadesQueSiEntrego, comparadorPorNombre);
+
+// 4. Imprimir el resultado
+        System.out.println("Al estudiante " + estudianteActual.getData().getNombre() + " le faltan estas actividades:");
+        NodoCompuesto<Actividad, Entrega> nodoFaltante = actividadesFaltantes.getHeader();
+        while (nodoFaltante != null) {
+            System.out.println("- " + nodoFaltante.getData().getNombre());
+            nodoFaltante = nodoFaltante.getNext();
+        }
+
+        System.out.println("\n-Diferencia del segundo estudiante de la lista-");
+        //Ahora probemos la diferencia con otro estudiante, tomaremos el ultimo de la lista de estudiantes
+        NodoCompuesto<Estudiante, Entrega> estudianteActual2 = listaEstudiantes.getHeader().getNext();
+        // 1. Obtenemos su lista de entregas (Tipo Entrega)
+        ListaCompuesta<Entrega, Entrega> entregasDelEstudiante2 = estudianteActual2.getReferenciaLista();
+
+// 2. Creamos una lista TEMPORAL de Actividades (para igualar los tipos)
+        ListaCompuesta<Actividad, Entrega> actividadesQueSiEntrego2 = new ListaCompuesta<>();
+
+        NodoCompuesto<Entrega, Entrega> nodoEnt2 = entregasDelEstudiante2.getHeader();
+        while (nodoEnt2 != null) {
+            entrega = nodoEnt2.getData();
+
+            // Creamos una "Actividad fantasma" usando el nombre que viene en la entrega.
+            // Para esto se ajusto el constructor para que se pueda crear actividades con solo el nombre de la actividad.
+            Actividad actTemporal2 = new Actividad(entrega.getActividad().getNombre());
+
+            actividadesQueSiEntrego2.add(new NodoCompuesto<>(actTemporal2));
+            nodoEnt2 = nodoEnt2.getNext();
+        }
+
+// 3. Como ambas listas son de tipo <Actividad, Entrega>, el método diferencia funcionará perfecto
+        ListaCompuesta<Actividad, Entrega> actividadesFaltantes2 = listaActividades.diferencia(actividadesQueSiEntrego2, comparadorPorNombre);
+
+// 4. Imprimir el resultado
+        System.out.println("Al estudiante " + estudianteActual2.getData().getNombre() + " le faltan estas actividades:");
+        NodoCompuesto<Actividad, Entrega> nodoFaltante2 = actividadesFaltantes2.getHeader();
+        while (nodoFaltante2 != null) {
+            System.out.println("- " + nodoFaltante2.getData().getNombre());
+            nodoFaltante2 = nodoFaltante2.getNext();
+        }
     }
 
-}
+
+    }

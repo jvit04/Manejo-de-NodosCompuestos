@@ -28,6 +28,14 @@ public class Actividad implements Serializable {
         this.notaMaxima = notaMaxima;
     }
 
+    public Actividad(String nombre) {
+        this.nombre = nombre;
+        this.notaMaxima = 100;
+        this.descripcion = "Sin Descripción";
+        this.fechaEnvio = LocalDate.now();
+        this.fechaLimite = null;
+    }
+
     //Getters y Setters
     public String getNombre() {
         return nombre;
