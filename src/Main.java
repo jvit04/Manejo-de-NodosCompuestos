@@ -41,6 +41,10 @@ public class Main {
 
                     ListaCompuesta<Actividad, Entrega> vigentes = listaActividades.buscarMenoresPrincipal(compFechas, actRef);
                     System.out.println("   -> Actividades ANTERIORES al 01-Abril-2026 (Pasadas): " + vigentes.getSize());
+
+                    //Como solicita el documento, se mostrarán a continuación las actividades vencidas.
+                    System.out.println("\n\t↓ LISTA DE ACTIVIDADES VENCIDAS ↓");
+                    System.out.println(vencidas);
                     break;
 
                 case 2:
