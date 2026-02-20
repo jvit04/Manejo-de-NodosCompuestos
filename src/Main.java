@@ -183,13 +183,13 @@ public class Main {
                     break;
 
                 case 8:
-                    System.out.println("\n--- [8] CREAR UN NUEVO CÁLCULO AGREGADO ---");
-
                     // =========================================================================
                     // Aquí le pedimos datos al usuario paso a paso para no asustarlo con la
                     // notación postfija. Una vez que escoge qué actividades sumar o promediar,
                     // nuestra clase utilitaria generará el string especial para la Pila.
                     // =========================================================================
+                    System.out.println("\n--- [8] CREAR UN NUEVO CÁLCULO AGREGADO ---");
+
                     scanner.nextLine();
                     System.out.print("¿Qué nombre le pondrá a este cálculo? (Ej: Promedio Final): ");
                     String nombreCalc = scanner.nextLine();
@@ -212,25 +212,34 @@ public class Main {
                     int tipoSeleccion = scanner.nextInt();
                     scanner.nextLine();
 
-                    String[] actividadesElegidas;
+                    //
+                    ListaCompuesta<String, String> actividadesElegidas = new ListaCompuesta<>();
 
                     if (tipoSeleccion == 1) {
-                        int totalActs = listaActividades.getSize();
-                        actividadesElegidas = new String[totalActs];
                         NodoCompuesto<Actividad, Entrega> actualAct = listaActividades.getHeader();
-                        int i = 0;
                         while (actualAct != null) {
-                            actividadesElegidas[i] = actualAct.getData().getNombre();
+                            actividadesElegidas.add(new NodoCompuesto<>(actualAct.getData().getNombre()));
                             actualAct = actualAct.getNext();
-                            i++;
                         }
                     } else {
                         System.out.println("\nEscriba los nombres de las actividades separados por coma.");
                         System.out.print("-> ");
-                        String entrada = scanner.nextLine();
-                        actividadesElegidas = entrada.split(",");
-                        for (int i = 0; i < actividadesElegidas.length; i++) {
-                            actividadesElegidas[i] = actividadesElegidas[i].trim();
+
+                        // Le agregamos una coma al final para que el ciclo detecte la última palabra
+                        String entrada = scanner.nextLine() + ",";
+                        String nombreTemp = "";
+
+                        // Leemos las comas letra por letra.
+                        for (int i = 0; i < entrada.length(); i++) {
+                            char letra = entrada.charAt(i);
+                            if (letra == ',') {
+                                if (!nombreTemp.trim().isEmpty()) {
+                                    actividadesElegidas.add(new NodoCompuesto<>(nombreTemp.trim()));
+                                }
+                                nombreTemp = ""; // Limpiamos para la siguiente actividad
+                            } else {
+                                nombreTemp = nombreTemp + letra;
+                            }
                         }
                     }
 
