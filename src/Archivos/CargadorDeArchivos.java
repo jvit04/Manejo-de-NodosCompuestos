@@ -106,4 +106,29 @@ public class CargadorDeArchivos {
             System.out.println("Error procesando datos de entregas: " + e.getMessage());
         }
     }
+
+    /**
+     * Carga los cálculos agregados desde el archivo de texto calculos.txt
+     * @param rutaArchivo La ruta del archivo.
+     * @return ListaCompuesta con los objetos Calculo instanciados.
+     */
+    public static ListaCompuesta<Calculo, String> cargarCalculos(String rutaArchivo) {
+        ListaCompuesta<Calculo, String> lista = new ListaCompuesta<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(rutaArchivo))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                // Formato esperado: NombreCalculo,Formula_Postfija
+                String[] datos = linea.split(",");
+                if(datos.length >= 2){
+                    Calculo c = new Calculo(datos[0].trim(), datos[1].trim());
+                    lista.add(new NodoCompuesto<>(c));
+                }
+            }
+            System.out.println(">> Cálculos cargados desde archivo: " + lista.getSize());
+        } catch (IOException e) {
+            System.out.println("Error leyendo archivo de cálculos: " + e.getMessage());
+        }
+        return lista;
+    }
 }
