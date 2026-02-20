@@ -266,10 +266,16 @@ public class Main {
                         System.out.println("\nEstudiante: " + est.getNombre() + " " + est.getApellido());
 
                         ListaCompuesta<Entrega, Entrega> entregas = nodoEstActual.getReferenciaLista();
+                        // Creamos una lista TEMPORAL para juntar Notas Reales + Fórmulas Calculadas
+                        ListaCompuesta<Entrega, Entrega> entregasYCalculos = new ListaCompuesta<>();
                         if (entregas != null) {
                             NodoCompuesto<Entrega, Entrega> entActual = entregas.getHeader();
+
                             while(entActual != null) {
                                 Entrega ent = entActual.getData();
+
+                                // Copiamos la nota real a nuestra lista temporal
+                                entregasYCalculos.add(new NodoCompuesto<>(ent));
 
                                 String textoNota = String.valueOf(ent.getNota());
                                 if (ent.getNota() == -1) {
@@ -286,10 +292,17 @@ public class Main {
                             NodoCompuesto<Calculo, String> nodoCalc = listaCalculos.getHeader();
                             while (nodoCalc != null) {
                                 Calculo c = nodoCalc.getData();
-                                double resultadoPila = CalculadoraConPilas.evaluar(c, nodoEstActual.getReferenciaLista());
+                                //Se evalua en la lista temporal
+                                double resultadoPila = CalculadoraConPilas.evaluar(c, entregasYCalculos);
 
                                 double resultadoRedondeado = Math.round(resultadoPila * 100.0) / 100.0;
                                 System.out.println("  * " + c.getNombre() + " = " + resultadoRedondeado);
+
+                               //Es necesaria la creación de actividades falsas, puesto a que teniamos un problema con las actividades
+                                // que dependian de otras, haciendo que la calculadora no sea funcional.
+                                Actividad actFalsa = new Actividad(c.getNombre());
+                                Entrega entregaFalsa = new Entrega(resultadoPila, "Cálculo", est, actFalsa);
+                                entregasYCalculos.add(new NodoCompuesto<>(entregaFalsa));
 
                                 nodoCalc = nodoCalc.getNext();
                             }

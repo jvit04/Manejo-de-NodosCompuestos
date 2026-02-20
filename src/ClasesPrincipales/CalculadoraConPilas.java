@@ -9,15 +9,15 @@ public class CalculadoraConPilas {
 
         // Le agregamos un espacio al final a la fórmula para asegurarnos de que el ciclo
         // procese la última palabra o número correctamente.
-        String formula = calculo.getFormula() + " ";
+        String formula = calculo.getFormula().replace("\r", "") + " ";
         String elementoTemporal = "";
 
         // Recorremos la fórmula letra por letra
         for (int i = 0; i < formula.length(); i++) {
             char letra = formula.charAt(i);
 
-            // Si encontramos un espacio, significa que terminamos de leer una palabra o número
-            if (letra == ' ') {
+            // Si encontramos un espacio, tabulación o salto de línea significa que terminamos de leer una palabra o número
+            if (letra == ' ' || letra == '\t' || letra == '\n') {
 
                 // Solo procesamos si la palabra no está vacía
                 if (elementoTemporal.isEmpty() == false) {
@@ -113,13 +113,8 @@ public class CalculadoraConPilas {
     // Construye una fórmula postfija automáticamente basada en una operación. Para evitar usar TDAS
     // que no corresponden al proyecto se tomará ventaja del TDA ListaCompuesta.
     public static String generar(String operacion, ListaCompuesta<String, String> nombres) {
-        if (nombres == null || nombres.isEmpty()) {
-            return "0";
-        }
-
-        if (nombres.getSize() == 1) {
-            return nombres.getHeader().getData();
-        }
+        if (nombres == null || nombres.isEmpty()) return "0";
+        if (nombres.getSize() == 1) return nombres.getHeader().getData();
 
         String formulaFinal = "";
         NodoCompuesto<String, String> actual = nombres.getHeader();
