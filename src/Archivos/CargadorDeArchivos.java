@@ -1,3 +1,7 @@
+package Archivos;
+
+import ClasesPrincipales.*;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -64,7 +68,7 @@ public class CargadorDeArchivos {
                     double nota = Double.parseDouble(datos[2].trim());
                     String comentario = datos[3].trim();
 
-                    // 1. Buscar al Estudiante por Cédula
+                    // 1. Buscar al ClasesPrincipales.Estudiante por Cédula
                     NodoCompuesto<Estudiante, Entrega> nodoEst = null;
                     for(NodoCompuesto<Estudiante, Entrega> p = listaEstudiantes.getHeader(); p != null; p = p.getNext()){
                         if(p.getData().getCedula().equals(cedulaBusq)){
@@ -73,7 +77,7 @@ public class CargadorDeArchivos {
                         }
                     }
 
-                    // 2. Buscar la Actividad por Nombre
+                    // 2. Buscar la ClasesPrincipales.Actividad por Nombre
                     NodoCompuesto<Actividad,Entrega> nodoActividad = null; //nodo para guardar el valor de la actividad a asociar con la entrega
                     Actividad actEncontrada = null;
                     for(NodoCompuesto<Actividad, Entrega> a = listaActividades.getHeader(); a != null; a = a.getNext()){

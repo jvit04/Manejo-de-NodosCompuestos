@@ -1,6 +1,8 @@
+package ClasesPrincipales;
+
 import java.io.Serializable;
 
-class NodoCompuesto<E, F> implements Serializable {
+public class NodoCompuesto<E, F> implements Serializable {
     // de dato principal tendra dato de tipo E
     private E data;
     private NodoCompuesto<E, F> next;

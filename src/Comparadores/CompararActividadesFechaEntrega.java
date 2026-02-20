@@ -1,4 +1,6 @@
+package Comparadores;
 import java.util.Comparator;
+import ClasesPrincipales.*;
 
 //Clase con comparador que evalúa la fechaLimite (atributo de Actividades).
 public class CompararActividadesFechaEntrega implements Comparator<Actividad> {

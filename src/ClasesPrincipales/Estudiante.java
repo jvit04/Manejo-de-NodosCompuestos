@@ -1,3 +1,7 @@
+package ClasesPrincipales;
+
+import Archivos.CodigoEstudiantil;
+
 import java.io.Serializable;
 
 public class Estudiante implements Serializable {

@@ -1,91 +1,143 @@
+import java.util.Scanner;
 import java.time.LocalDate;
 
+// Importamos tus paquetes
+import Comparadores.*;
+import ClasesPrincipales.*;
+import Archivos.*;
+
 public class Main {
-    // 1. Cargar Estudiantes y Actividades
-    private static ListaCompuesta<Estudiante, Entrega> listaEstudiantes = CargadorDeArchivos.cargarEstudiantes("src/estudiantes.txt");
-    private static ListaCompuesta<Actividad, Entrega> listaActividades = CargadorDeArchivos.cargarActividades("src/actividades.txt");
+    private static ListaCompuesta<Estudiante, Entrega> listaEstudiantes = CargadorDeArchivos.cargarEstudiantes("src/Archivos/estudiantes.txt");
+    private static ListaCompuesta<Actividad, Entrega> listaActividades = CargadorDeArchivos.cargarActividades("src/Archivos/actividades.txt");
 
     public static void main(String[] args) {
-
         System.out.println("=== INICIANDO SISTEMA CON CARGA DE ARCHIVOS ===");
 
-
-
         if (listaEstudiantes.getSize() == 0 || listaActividades.getSize() == 0) {
-            System.out.println("[!] ERROR: Faltan datos base (estudiantes o actividades).");
+            System.out.println("[!] Error: Faltan datos base (estudiantes o actividades).");
             return;
         }
         System.out.println("-> Base cargada: " + listaEstudiantes.getSize() + " estudiantes, " + listaActividades.getSize() + " actividades.");
 
-        // 2. CARGAR ENTREGAS
-        // Esto leerá entregas.txt y llenará las sublistas de los estudiantes automáticamente
-        CargadorDeArchivos.cargarEntregas("src/entregas.txt", listaEstudiantes, listaActividades);
+        CargadorDeArchivos.cargarEntregas("src/Archivos/entregas.txt", listaEstudiantes, listaActividades);
 
+        Scanner scanner = new Scanner(System.in);
+        int opcion;
 
-        // =============================================================
-        //              ZONA DE PRUEBAS DE TUS FUNCIONES
-        // =============================================================
+        do {
+            Menu.mostrarOpciones();
+            opcion = scanner.nextInt();
 
-        // PRUEBA A: Actividades Vencidas / Vigentes
-        System.out.println("\n[A] PRUEBA DE FECHAS (Corte: 01-Abril-2026)");
-        LocalDate fechaCorte = LocalDate.of(2026, 4, 1);
-        CompararActividadesFechaEntrega compFechas = new CompararActividadesFechaEntrega();
-        Actividad actRef = new Actividad("Ref", "Ref", fechaCorte, 0, "Ref");
+            switch (opcion) {
+                case 1:
+                    System.out.println("\n--- [1] ACTIVIDADES VENCIDAS Y VIGENTES ---");
+                    LocalDate fechaCorte = LocalDate.of(2026, 4, 1);
+                    CompararActividadesFechaEntrega compFechas = new CompararActividadesFechaEntrega();
+                    Actividad actRef = new Actividad("Ref", "Ref", fechaCorte, 0, "Ref");
 
-        ListaCompuesta<Actividad, Entrega> vencidas = listaActividades.buscarMayoresPrincipal(compFechas, actRef);
-        System.out.println("   - Actividades POSTERIORES a la fecha (Futuras): " + vencidas.getSize());
+                    ListaCompuesta<Actividad, Entrega> vencidas = listaActividades.buscarMayoresPrincipal(compFechas, actRef);
+                    System.out.println("   -> Actividades POSTERIORES al 01-Abril-2026 (Futuras): " + vencidas.getSize());
 
-        ListaCompuesta<Actividad, Entrega> vigentes = listaActividades.buscarMenoresPrincipal(compFechas, actRef);
-        System.out.println("   - Actividades ANTERIORES a la fecha (Pasadas): " + vigentes.getSize());
+                    ListaCompuesta<Actividad, Entrega> vigentes = listaActividades.buscarMenoresPrincipal(compFechas, actRef);
+                    System.out.println("   -> Actividades ANTERIORES al 01-Abril-2026 (Pasadas): " + vigentes.getSize());
+                    break;
 
+                case 2:
+                    System.out.println("\n--- [2] REPORTE DE NOTAS DUPLICADAS ---");
+                    CompararEntregasxNotas compNotas = new CompararEntregasxNotas();
+                    ListaCompuesta<Estudiante, Entrega> repetidos = listaEstudiantes.buscarNodosConDuplicadosEnSublista(compNotas);
 
-        // PRUEBA B: Estudiantes con Entregas Duplicadas
-        // (En el txt puse a Juan Perez y Ana Gomez con notas repetidas a propósito)
-        System.out.println("\n[B] PRUEBA DE DUPLICADOS");
-        CompararEntregasxNotas compNotas = new CompararEntregasxNotas();
+                    System.out.println("   Estudiantes con notas idénticas en diferentes entregas:");
+                    if (!repetidos.isEmpty()) {
+                        System.out.println(repetidos);
+                    } else {
+                        System.out.println("   -> No se encontraron duplicados.");
+                    }
+                    break;
 
-        ListaCompuesta<Estudiante, Entrega> repetidos = listaEstudiantes.buscarEstudiantesConDuplicadosEnSecundaria(compNotas);
+                case 3:
+                    System.out.println("\n--- [3] CUMPLIMIENTO (10% a 60%) ---");
+                    int totalActividades = listaActividades.getSize();
+                    int minEntregas = (int) Math.ceil((10.0 / 100.0) * totalActividades);
+                    int maxEntregas = (int) ((60.0 / 100.0) * totalActividades);
 
-        System.out.println("   Estudiantes con notas idénticas en sus entregas:");
-        if(!repetidos.isEmpty()){
-            System.out.println(repetidos); // Debería salir Juan Perez y Ana Gomez según mi txt
-        } else {
-            System.out.println("   No se encontraron duplicados.");
-        }
+                    ListaCompuesta<Estudiante, Entrega> cumplidos = listaEstudiantes.buscarPorRangoDeTamanoSublista(minEntregas, maxEntregas);
 
+                    NodoCompuesto<Estudiante, Entrega> actual = cumplidos.getHeader();
+                    if (actual == null) System.out.println("   -> Ningún estudiante en este rango.");
 
-        // PRUEBA C: Rendimiento por Porcentaje
-        System.out.println("\n[C] PRUEBA DE PORCENTAJE DE CUMPLIMIENTO");
-        // En el txt, Maria Lopez tiene 5 entregas. Si hay 10 actividades en total, tiene 50%.
-        int totalActividades = listaActividades.getSize();
-        double min = 10.0;
-        double max = 60.0; // Buscamos gente que tenga entre 10% y 60% de avance
+                    while (actual != null) {
+                        int n = (actual.getReferenciaLista() != null) ? actual.getReferenciaLista().getSize() : 0;
+                        double p = ((double) n / totalActividades) * 100;
+                        System.out.println("   -> " + actual.getData().getNombre() + " " + actual.getData().getApellido()
+                                + " (Entregas: " + n + " | " + String.format("%.1f", p) + "%)");
+                        actual = actual.getNext();
+                    }
+                    break;
 
-        System.out.println("   Buscando estudiantes con avance entre " + min + "% y " + max + "%:");
+                case 4:
+                    System.out.println("\n--- [4] ACTIVIDADES FALTANTES ---");
 
-        ListaCompuesta<Estudiante, Entrega> cumplidos = listaEstudiantes.buscarPorPorcentajeEntrega(totalActividades, min, max);
+                    // Tomamos al primer estudiante
+                    NodoCompuesto<Estudiante, Entrega> est1 = listaEstudiantes.getHeader();
+                    if (est1 != null) {
+                        System.out.println("\n   Faltantes de " + est1.getData().getNombre() + ":");
 
-        NodoCompuesto<Estudiante, Entrega> actual = cumplidos.getHeader();
-        while(actual != null) {
-            int n = actual.getReferenciaLista().getSize();
-            double p = ((double)n / totalActividades) * 100;
-            System.out.println("   -> " + actual.getData().getNombre() + " " + actual.getData().getApellido()
-                    + " (Entregas: " + n + " | " + String.format("%.1f", p) + "%)");
-            actual = actual.getNext();
-        }
+                        // 1. Creamos el comparador pasándole las entregas de este estudiante
+                        // Es imoprtante entregarle una lista <Entrega, Entrega> la cual es la referencia lista de este estudiante
+                        CompararActividadFaltante compFaltante = new CompararActividadFaltante(est1.getReferenciaLista());
 
-        System.out.println("------------------Buscar Calificaciones con calificaciones menores---------------------------");
-        Entrega entrega = new Entrega(7);
-        CompararEntregasxNotas compararEntregasxNotas = new CompararEntregasxNotas();
-        System.out.println("\n---Retornando estudiantes---");
-       System.out.println(listaEstudiantes.buscarTodosMenoresEnListaSecundaria(compararEntregasxNotas,entrega));
-        System.out.println("\n---Retornando actividades---");
-        System.out.println(listaActividades.buscarTodosMenoresEnListaSecundaria(compararEntregasxNotas,entrega));
+                        // 2. Usamos el método genérico (pasamos una Actividad vacía de relleno).
+                        // El método recorre la lista de todas las actividades del curso y, en cada iteración, el comparador verifica si dicha actividad falta en la lista del estudiante (est1).
+                        ListaCompuesta<Actividad, Entrega> faltantes = listaActividades.buscarIgualesPrincipal(compFaltante, new Actividad("relleno"));
 
+                        if (faltantes.isEmpty()) {
+                            System.out.println("      - ¡Ha entregado todo!");
+                        } else {
 
-        System.out.println("------------------Buscar Entregas Vencidas sin nota---------------------------");
-        Entrega entrega1 = new Entrega(-1);//Notas con valor -1 significan nulas.
-        System.out.println(vencidas.buscarIgualesEnListaSecundaria(compararEntregasxNotas, entrega1));
+                            for (NodoCompuesto<Actividad, Entrega> p = faltantes.getHeader(); p != null; p = p.getNext()) {
+                                System.out.println("      - " + p.getData().getNombre());
+                            }
+                        }
+                    }
+                    break;
+
+                case 5:
+                    System.out.println("\n--- [5] Buscar Calificaciones con calificaciones menores a 7 ---");
+                    Entrega entrega = new Entrega(7);
+                    CompararEntregasxNotas compararEntregasxNotas = new CompararEntregasxNotas();
+
+                    System.out.println("\n--- Retornando estudiantes ---");
+                    System.out.println(listaEstudiantes.buscarTodosMenoresEnListaSecundaria(compararEntregasxNotas, entrega));
+
+                    System.out.println("\n--- Retornando actividades ---");
+                    System.out.println(listaActividades.buscarTodosMenoresEnListaSecundaria(compararEntregasxNotas, entrega));
+                    break;
+
+                case 6:
+                    System.out.println("\n--- [6] Buscar Entregas Vencidas sin nota (-1) ---");
+
+                    // Primero necesitamos volver a calcular las vencidas porque estamos en otro "caso"
+                    LocalDate corte = LocalDate.of(2026, 4, 1);
+                    CompararActividadesFechaEntrega compF = new CompararActividadesFechaEntrega();
+                    Actividad actR = new Actividad("Ref", "Ref", corte, 0, "Ref");
+                    ListaCompuesta<Actividad, Entrega> actosVencidas = listaActividades.buscarMayoresPrincipal(compF, actR);
+
+                    Entrega entrega1 = new Entrega(-1); // Notas con valor -1 significan nulas.
+                    CompararEntregasxNotas compNotasVencidas = new CompararEntregasxNotas();
+
+                    System.out.println(actosVencidas.buscarIgualesEnListaSecundaria(compNotasVencidas, entrega1));
+                    break;
+
+                case 0:
+                    System.out.println("Guardando y saliendo del sistema... ¡Hasta luego!");
+                    break;
+
+                default:
+                    System.out.println("[!] Opción no válida. Por favor, intente de nuevo.");
+            }
+        } while (opcion != 0);
+
+        scanner.close();
     }
-
 }

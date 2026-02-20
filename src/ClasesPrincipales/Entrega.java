@@ -1,4 +1,5 @@
-import java.io.Serial;
+package ClasesPrincipales;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 
@@ -25,9 +26,30 @@ public class Entrega implements Serializable {
     }
 
     //Getters y Setters
+    public String getContenido() {
+        return contenido;
+    }
+
+    public LocalDate getFechaEntrega() {
+        return fechaEntrega;
+    }
+
+    public String getComentarios() {
+        return comentarios;
+    }
+
+    public Estudiante getEstudiante() {
+        return estudiante;
+    }
+
+    public Actividad getActividad() {
+        return actividad;
+    }
+
     public double getNota() {
         return nota;
     }
+
     @Override
     public String toString() {
         // Recuperamos los datos de forma segura (manejando nulos)
@@ -36,9 +58,9 @@ public class Entrega implements Serializable {
         String fecha = (fechaEntrega != null) ? fechaEntrega.toString() : "N/A";
         String comment = (comentarios != null) ? comentarios : "Sin comentarios";
 
-        return "Entrega {" +
-                "Actividad='" + nombreAct + '\'' +
-                ", Estudiante='" + nombreEst + '\'' +
+        return "ClasesPrincipales.Entrega {" +
+                "ClasesPrincipales.Actividad='" + nombreAct + '\'' +
+                ", ClasesPrincipales.Estudiante='" + nombreEst + '\'' +
                 ", Nota=" + nota +
                 ", Fecha=" + fecha +
                 ", Comentarios='" + comment + '\'' +
@@ -46,7 +68,7 @@ public class Entrega implements Serializable {
     }
 
 
-    //Método equals para la clase Entrega, su implementación fue necesaria, ya que es la forma la que se reconoce
+    //Método equals para la clase ClasesPrincipales.Entrega, su implementación fue necesaria, ya que es la forma la que se reconoce
     //si la nota de dos Entregas son iguales.
     @Override
     public boolean equals(Object o) {

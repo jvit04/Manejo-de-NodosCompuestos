@@ -1,3 +1,5 @@
+package ClasesPrincipales;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 
@@ -10,7 +12,7 @@ public class Actividad implements Serializable {
     private LocalDate fechaLimite;
     private int notaMaxima;
 
-//Constructor
+    //Constructor
     public Actividad(String nombre, String descripcion, LocalDate fechaLimite, int notaMaxima, String tipo) {
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -21,11 +23,19 @@ public class Actividad implements Serializable {
     }
 
     public Actividad(int notaMaxima) {
-        this.nombre = "Actividad Sin Nombre ";
+        this.nombre = "ClasesPrincipales.Actividad Sin Nombre ";
         this.descripcion = "Sin Descripción";
         this.fechaEnvio = LocalDate.now();
         this.fechaLimite = null;
         this.notaMaxima = notaMaxima;
+    }
+
+    public Actividad(String nombre) {
+        this.nombre = nombre;
+        this.notaMaxima = 100;
+        this.descripcion = "Sin Descripción";
+        this.fechaEnvio = LocalDate.now();
+        this.fechaLimite = null;
     }
 
     //Getters y Setters
@@ -48,6 +58,6 @@ public class Actividad implements Serializable {
     //Método toString
     @Override
     public String toString() {
-        return " -> Actividad: " + this.getNombre() + " | Fecha: " + this.getFechaLimite();
+        return " -> ClasesPrincipales.Actividad: " + this.getNombre() + " | Fecha: " + this.getFechaLimite();
     }
 }
