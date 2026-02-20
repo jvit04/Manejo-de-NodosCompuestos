@@ -30,6 +30,7 @@ public class Main {
 
             switch (opcion) {
                 case 1:
+                    // Actividades del curso cuya fecha de entrega límite ya feneció.
                     System.out.println("\n--- [1] ACTIVIDADES VENCIDAS Y VIGENTES ---");
                     LocalDate fechaCorte = LocalDate.of(2026, 4, 1);
                     CompararActividadesFechaEntrega compFechas = new CompararActividadesFechaEntrega();
@@ -43,6 +44,7 @@ public class Main {
                     break;
 
                 case 2:
+                    // Estudiantes que tienen la misma nota en dos actividades diferentes.
                     System.out.println("\n--- [2] REPORTE DE NOTAS DUPLICADAS ---");
                     CompararEntregasxNotas compNotas = new CompararEntregasxNotas();
                     ListaCompuesta<Estudiante, Entrega> repetidos = listaEstudiantes.buscarNodosConDuplicadosEnSublista(compNotas);
@@ -56,6 +58,7 @@ public class Main {
                     break;
 
                 case 3:
+                    // Estudiantes cuyo porcentaje de entregas se encuentre en un rango dado.
                     System.out.println("\n--- [3] CUMPLIMIENTO (10% a 60%) ---");
                     int totalActividades = listaActividades.getSize();
                     int minEntregas = (int) Math.ceil((10.0 / 100.0) * totalActividades);
@@ -76,6 +79,7 @@ public class Main {
                     break;
 
                 case 4:
+                    // Estudiantes que no han respondido aún actividades (enviadas en un rango).
                     System.out.println("\n--- [4] ACTIVIDADES FALTANTES ---");
 
                     // Tomamos al primer estudiante
@@ -103,6 +107,7 @@ public class Main {
                     break;
 
                 case 5:
+                    // Actividades en las cuales las calificaciones están en un rango de notas dado.
                     System.out.println("\n--- [5] Buscar Calificaciones con calificaciones menores a 7 ---");
                     Entrega entrega = new Entrega(7);
                     CompararEntregasxNotas compararEntregasxNotas = new CompararEntregasxNotas();
@@ -115,6 +120,7 @@ public class Main {
                     break;
 
                 case 6:
+                    // Entregas enviadas en un rango de fecha dado y que aún no han recibido calificación.
                     System.out.println("\n--- [6] Buscar Entregas Vencidas sin nota (-1) ---");
 
                     // Primero necesitamos volver a calcular las vencidas porque estamos en otro "caso"
@@ -127,6 +133,25 @@ public class Main {
                     CompararEntregasxNotas compNotasVencidas = new CompararEntregasxNotas();
 
                     System.out.println(actosVencidas.buscarIgualesEnListaSecundaria(compNotasVencidas, entrega1));
+                    break;
+
+                case 7:
+                    // Actividades en los cuales las entregas estén incompletas.
+                    // Lógica: Incompleta = (Cantidad de entregas < Total de estudiantes matriculados)
+                    System.out.println("\n--- [7] ACTIVIDADES CON ENTREGAS INCOMPLETAS ---");
+                    int totalEstudiantes = listaEstudiantes.getSize();
+
+                    // Buscamos actividades que tengan desde 0 hasta (total - 1) entregas
+                    ListaCompuesta<Actividad, Entrega> incompletas = listaActividades.buscarPorRangoDeTamanoSublista(0, totalEstudiantes - 1);
+
+                    if (!incompletas.isEmpty()) {
+                        for(NodoCompuesto<Actividad, Entrega> p = incompletas.getHeader(); p != null; p = p.getNext()){
+                            int cantEntregas = (p.getReferenciaLista() != null) ? p.getReferenciaLista().getSize() : 0;
+                            System.out.println("   -> " + p.getData().getNombre() + " (Entregas: " + cantEntregas + "/" + totalEstudiantes + ")");
+                        }
+                    } else {
+                        System.out.println("   -> Todas las actividades tienen entregas completas.");
+                    }
                     break;
 
                 case 0:

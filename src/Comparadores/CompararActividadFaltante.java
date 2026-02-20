@@ -11,7 +11,6 @@ import java.util.Comparator;
  * Recibe la sublista de entregas del estudiante a través del constructor.
  */
 public class CompararActividadFaltante implements Comparator<Actividad> {
-
     private ListaCompuesta<Entrega, Entrega> entregasDelEstudiante;
 
     /**

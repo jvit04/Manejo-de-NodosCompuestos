@@ -6,13 +6,14 @@ package ClasesPrincipales;
 public class Menu {
 
     public static void mostrarOpciones() {
-        System.out.println("\n=== SISTEMA DE CALIFICACIONES ===");
-        System.out.println("1. Ver actividades vencidas y vigentes");
-        System.out.println("2. Reporte de notas duplicadas");
-        System.out.println("3. Reporte de cumplimiento (10% a 60%)");
-        System.out.println("4. Ver actividades faltantes por estudiante (Diferencia)");
-        System.out.println("5. Buscar estudiantes y actividades con calificaciones menores a 7");
-        System.out.println("6. Buscar entregas vencidas sin calificar (-1)");
+        System.out.println("\n=== SISTEMA DE CALIFICACIONES (Pedido en el pdf) ===");
+        System.out.println("1. Actividades cuya fecha de entrega límite ya feneció");
+        System.out.println("2. Estudiantes que tienen la misma nota en dos actividades diferentes");
+        System.out.println("3. Estudiantes cuyo porcentaje de entregas se encuentra en un rango dado");
+        System.out.println("4. Estudiantes que no han respondido aún actividades (Faltantes)");
+        System.out.println("5. Actividades con calificaciones en un rango de notas dado");
+        System.out.println("6. Entregas en un rango de fecha dado que aún no reciben calificación");
+        System.out.println("7. Actividades en los cuales las entregas estén incompletas");
         System.out.println("0. Salir");
         System.out.print("Elija una opción: ");
     }
