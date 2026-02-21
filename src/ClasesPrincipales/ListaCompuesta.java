@@ -103,6 +103,9 @@ public class ListaCompuesta<E, F> implements Serializable {
      * @return El primer ClasesPrincipales.NodoCompuesto idéntico, o null si no lo encuentra.
      */
     public NodoCompuesto<E, F> buscarExacto(Comparator<E> c, E data) {
+        if (this.isEmpty() || data == null) {
+            return null;
+        }
         for (NodoCompuesto<E, F> p = header; p != null; p = p.getNext()) {
             if (c.compare(p.getData(), data) == 0) return p;
         }
@@ -264,6 +267,20 @@ public class ListaCompuesta<E, F> implements Serializable {
      */
     public ListaCompuesta<E, F> diferencia(ListaCompuesta<E, F> lista2, Comparator<E> comparator) {
         ListaCompuesta<E, F> diferencia = new ListaCompuesta<>();
+        //Si mi lista principal está vacía, no hay nada que comparar.
+        if (this.isEmpty()) {
+            return diferencia;
+        }
+        // Si la lista2 es nula o está vacía, la diferencia es TODA mi lista principal.
+        if (lista2 == null || lista2.isEmpty()) {
+            for (NodoCompuesto<E, F> i = this.getHeader(); i != null; i = i.getNext()) {
+                NodoCompuesto<E, F> nodoNuevo = new NodoCompuesto<>(i.getData());
+                nodoNuevo.SetListaCompuesta(i.getReferenciaLista()); // Salvamos tu sublista
+                diferencia.add(nodoNuevo);
+            }
+            return diferencia;
+        }
+
         for (NodoCompuesto<E, F> i = this.getHeader(); i != null; i = i.getNext()) {
             // Si el elemento no existe en la lista2, se agrega a la diferencia
             if (lista2.buscarExacto(comparator, i.getData()) == null) {

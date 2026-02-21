@@ -191,6 +191,8 @@ public class Main {
                     System.out.println("\n--- [8] CREAR UN NUEVO CÁLCULO AGREGADO ---");
 
                     scanner.nextLine();
+
+
                     System.out.print("¿Qué nombre le pondrá a este cálculo? (Ej: Promedio Final): ");
                     String nombreCalc = scanner.nextLine();
 
@@ -212,7 +214,7 @@ public class Main {
                     int tipoSeleccion = scanner.nextInt();
                     scanner.nextLine();
 
-                    //
+
                     ListaCompuesta<String, String> actividadesElegidas = new ListaCompuesta<>();
 
                     if (tipoSeleccion == 1) {
