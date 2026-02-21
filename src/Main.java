@@ -297,9 +297,20 @@ public class Main {
                     System.out.print("Ingrese los cálculos a incluir separados por coma (o escriba 'Todos'): ");
                     String calcsElegidos = scanner.nextLine().trim();
 
-                    System.out.print("¿Desea exportar este reporte a un archivo de texto? (S/N): ");
-                    String opcionExportar = scanner.nextLine().trim();
-                    boolean exportar = opcionExportar.equalsIgnoreCase("S");
+                    // =========================================================================
+                    // Validación estricta para asegurar que el usuario responda S o N
+                    // =========================================================================
+                    String opcionExportar;
+                    do {
+                        System.out.print("¿Desea exportar este reporte a un archivo de texto? (S/N): ");
+                        opcionExportar = scanner.nextLine().trim().toUpperCase(); // Lo convertimos a mayúscula para evaluar más fácil
+
+                        if (!opcionExportar.equals("S") && !opcionExportar.equals("N")) {
+                            System.out.println("   [!] Entrada inválida. Por favor, ingrese 'S' para Sí o 'N' para No.");
+                        }
+                    } while (!opcionExportar.equals("S") && !opcionExportar.equals("N"));
+
+                    boolean exportar = opcionExportar.equals("S");
 
                     // =========================================================================
                     // Usamos un bloque try-with-resources para manejar el archivo de texto.
