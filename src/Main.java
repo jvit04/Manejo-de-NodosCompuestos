@@ -2,8 +2,12 @@ import Archivos.CargadorDeArchivos;
 import ClasesPrincipales.*;
 import Comparadores.*;
 
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.util.Scanner;
+import java.io.IOException;
+
 
 public class Main {
 
@@ -96,29 +100,55 @@ public class Main {
                     break;
 
                 case 4:
-                    System.out.println("\n--- [4] ESTUDIANTES QUE NO HAN RESPONDIDO AÚN ACTIVIDADES ---");
+                    System.out.println("\n--- [4] ESTUDIANTES QUE NO HAN RESPONDIDO AÚN ACTIVIDADES EN UN RANGO DE FECHAS ---");
 
-                    NodoCompuesto<Estudiante, Entrega> est1 = listaEstudiantes.getHeader();
-                    if (est1 != null) {
-                        System.out.println("\n   Actividades que NO ha respondido " + est1.getData().getNombre() + ":");
+                    // =========================================================================
+                    // Primero pedimos al usuario el rango de fechas para filtrar las actividades.
+                    // Limpiamos el buffer del scanner antes de leer los textos.
+                    // =========================================================================
+                    scanner.nextLine();
+                    System.out.print("Ingrese fecha de inicio del envío (YYYY-MM-DD): ");
+                    LocalDate fechaInicio4 = LocalDate.parse(scanner.nextLine());
+                    System.out.print("Ingrese fecha de fin del envío (YYYY-MM-DD): ");
+                    LocalDate fechaFin4 = LocalDate.parse(scanner.nextLine());
 
-                        // =========================================================================
-                        // Le pasamos las notas de este estudiante a nuestro comparador.
-                        // Luego, buscarIgualesPrincipal recorrerá TODAS las actividades del curso,
-                        // y el comparador revisará si dicha actividad falta en la lista del estudiante.
-                        // =========================================================================
-                        CompararActividadFaltante compFaltante = new CompararActividadFaltante(est1.getReferenciaLista());
-                        ListaCompuesta<Actividad, Entrega> faltantes = listaActividades.buscarIgualesPrincipal(compFaltante, new Actividad("relleno"));
+                    // =========================================================================
+                    // Filtramos la lista principal de actividades para obtener solo aquellas
+                    // cuya fecha esté dentro del rango especificado por el usuario.
+                    // Usamos buscarIgualesPrincipal con nuestro nuevo comparador.
+                    // =========================================================================
+                    CompararActividadEnRango compRangoAct = new CompararActividadEnRango(fechaInicio4, fechaFin4);
+                    ListaCompuesta<Actividad, Entrega> actividadesFiltradas = listaActividades.buscarIgualesPrincipal(compRangoAct, new Actividad("dummy"));
+
+                    if (actividadesFiltradas.isEmpty()) {
+                        System.out.println("   -> No hay actividades registradas en ese rango de fechas.");
+                        break;
+                    }
+
+                    // =========================================================================
+                    // Recorremos la lista de estudiantes uno por uno.
+                    // Para cada estudiante, comparamos sus entregas con la sublista de
+                    // actividades que acabamos de filtrar (las que están en el rango).
+                    // =========================================================================
+                    NodoCompuesto<Estudiante, Entrega> estActual4 = listaEstudiantes.getHeader();
+
+                    while (estActual4 != null) {
+                        System.out.println("\n   Actividades que NO ha respondido " + estActual4.getData().getNombre() + ":");
+
+                        CompararActividadFaltante compFaltante = new CompararActividadFaltante(estActual4.getReferenciaLista());
+                        ListaCompuesta<Actividad, Entrega> faltantes = actividadesFiltradas.buscarIgualesPrincipal(compFaltante, new Actividad("relleno"));
 
                         if (faltantes.isEmpty()) {
-                            System.out.println("      - ¡Ha entregado todo!");
+                            System.out.println("      - ¡Ha entregado todo en este rango!");
                         } else {
                             for (NodoCompuesto<Actividad, Entrega> p = faltantes.getHeader(); p != null; p = p.getNext()) {
                                 System.out.println("      - " + p.getData().getNombre());
                             }
                         }
+                        estActual4 = estActual4.getNext();
                     }
                     break;
+
 
                 case 5:
                     System.out.println("\n--- [5] ACTIVIDADES CON CALIFICACIONES EN UN RANGO DE NOTAS (Ej: 5 a 8) ---");
@@ -257,61 +287,104 @@ public class Main {
                     System.out.println("\n--- [9] REPORTE PERSONALIZADO ---");
 
                     // =========================================================================
-                    // Aquí recorremos la lista principal de estudiantes uno por uno.
-                    // Primero imprimimos sus notas base y luego le enviamos sus entregas a la
-                    // CalculadoraConPilas para que resuelva las fórmulas matemáticas que creamos.
+                    // Solicitamos al usuario qué actividades y cálculos desea incluir.
+                    // Si escribe 'Todas' o 'Todos', se omitirá el filtro mostrando el total.
                     // =========================================================================
-                    NodoCompuesto<Estudiante, Entrega> nodoEstActual = listaEstudiantes.getHeader();
+                    scanner.nextLine();
+                    System.out.print("Ingrese las actividades a incluir separadas por coma (o escriba 'Todas'): ");
+                    String actsElegidas = scanner.nextLine().trim();
 
-                    while (nodoEstActual != null) {
-                        Estudiante est = nodoEstActual.getData();
-                        System.out.println("\nEstudiante: " + est.getNombre() + " " + est.getApellido());
+                    System.out.print("Ingrese los cálculos a incluir separados por coma (o escriba 'Todos'): ");
+                    String calcsElegidos = scanner.nextLine().trim();
 
-                        ListaCompuesta<Entrega, Entrega> entregas = nodoEstActual.getReferenciaLista();
-                        // Creamos una lista TEMPORAL para juntar Notas Reales + Fórmulas Calculadas
-                        ListaCompuesta<Entrega, Entrega> entregasYCalculos = new ListaCompuesta<>();
-                        if (entregas != null) {
-                            NodoCompuesto<Entrega, Entrega> entActual = entregas.getHeader();
+                    System.out.print("¿Desea exportar este reporte a un archivo de texto? (S/N): ");
+                    String opcionExportar = scanner.nextLine().trim();
+                    boolean exportar = opcionExportar.equalsIgnoreCase("S");
 
-                            while(entActual != null) {
-                                Entrega ent = entActual.getData();
+                    // =========================================================================
+                    // Usamos un bloque try-with-resources para manejar el archivo de texto.
+                    // Así nos aseguramos de que el archivo se cierre automáticamente al terminar.
+                    // =========================================================================
+                    try (PrintWriter writer = exportar ? new PrintWriter(new FileWriter("Reporte_Personalizado.txt")) : null) {
 
-                                // Copiamos la nota real a nuestra lista temporal
-                                entregasYCalculos.add(new NodoCompuesto<>(ent));
+                        if (exportar) {
+                            writer.println("=== REPORTE PERSONALIZADO DE CALIFICACIONES ===");
+                        }
 
-                                String textoNota = String.valueOf(ent.getNota());
-                                if (ent.getNota() == -1) {
-                                    textoNota = "Sin calificar";
+                        // =========================================================================
+                        // Aquí recorremos la lista principal de estudiantes uno por uno.
+                        // =========================================================================
+                        NodoCompuesto<Estudiante, Entrega> nodoEstActual = listaEstudiantes.getHeader();
+
+                        while (nodoEstActual != null) {
+                            Estudiante est = nodoEstActual.getData();
+                            String tituloEstudiante = "\nEstudiante: " + est.getNombre() + " " + est.getApellido();
+
+                            System.out.println(tituloEstudiante);
+                            if (exportar) writer.println(tituloEstudiante);
+
+                            ListaCompuesta<Entrega, Entrega> entregas = nodoEstActual.getReferenciaLista();
+                            ListaCompuesta<Entrega, Entrega> entregasYCalculos = new ListaCompuesta<>();
+
+                            if (entregas != null) {
+                                NodoCompuesto<Entrega, Entrega> entActual = entregas.getHeader();
+
+                                while(entActual != null) {
+                                    Entrega ent = entActual.getData();
+                                    entregasYCalculos.add(new NodoCompuesto<>(ent));
+
+                                    String nombreAct = ent.getActividad().getNombre();
+                                    if (actsElegidas.equalsIgnoreCase("Todas") || actsElegidas.contains(nombreAct)) {
+                                        String textoNota = String.valueOf(ent.getNota());
+                                        if (ent.getNota() == -1) {
+                                            textoNota = "Sin calificar";
+                                        }
+                                        String lineaNota = "  - " + nombreAct + ": " + textoNota;
+
+                                        System.out.println(lineaNota);
+                                        if (exportar) writer.println(lineaNota);
+                                    }
+                                    entActual = entActual.getNext();
                                 }
-
-                                System.out.println("  - " + ent.getActividad().getNombre() + ": " + textoNota);
-                                entActual = entActual.getNext();
                             }
+
+                            if (!listaCalculos.isEmpty()) {
+                                String tituloCalculos = "  -- Cálculos Agregados Matemáticos --";
+                                System.out.println(tituloCalculos);
+                                if (exportar) writer.println(tituloCalculos);
+
+                                NodoCompuesto<Calculo, String> nodoCalc = listaCalculos.getHeader();
+                                while (nodoCalc != null) {
+                                    Calculo c = nodoCalc.getData();
+                                    double resultadoPila = CalculadoraConPilas.evaluar(c, entregasYCalculos);
+
+                                    if (calcsElegidos.equalsIgnoreCase("Todos") || calcsElegidos.contains(c.getNombre())) {
+                                        double resultadoRedondeado = Math.round(resultadoPila * 100.0) / 100.0;
+                                        String lineaCalculo = "  * " + c.getNombre() + " = " + resultadoRedondeado;
+
+                                        System.out.println(lineaCalculo);
+                                        if (exportar) writer.println(lineaCalculo);
+                                    }
+
+                                    Actividad actFalsa = new Actividad(c.getNombre());
+                                    Entrega entregaFalsa = new Entrega(resultadoPila, "Cálculo", est, actFalsa);
+                                    entregasYCalculos.add(new NodoCompuesto<>(entregaFalsa));
+
+                                    nodoCalc = nodoCalc.getNext();
+                                }
+                            }
+                            nodoEstActual = nodoEstActual.getNext();
                         }
 
-                        if (!listaCalculos.isEmpty()) {
-                            System.out.println("  -- Cálculos Agregados Matemáticos --");
-                            NodoCompuesto<Calculo, String> nodoCalc = listaCalculos.getHeader();
-                            while (nodoCalc != null) {
-                                Calculo c = nodoCalc.getData();
-                                //Se evalua en la lista temporal
-                                double resultadoPila = CalculadoraConPilas.evaluar(c, entregasYCalculos);
-
-                                double resultadoRedondeado = Math.round(resultadoPila * 100.0) / 100.0;
-                                System.out.println("  * " + c.getNombre() + " = " + resultadoRedondeado);
-
-                               //Es necesaria la creación de actividades falsas, puesto a que teniamos un problema con las actividades
-                                // que dependian de otras, haciendo que la calculadora no sea funcional.
-                                Actividad actFalsa = new Actividad(c.getNombre());
-                                Entrega entregaFalsa = new Entrega(resultadoPila, "Cálculo", est, actFalsa);
-                                entregasYCalculos.add(new NodoCompuesto<>(entregaFalsa));
-
-                                nodoCalc = nodoCalc.getNext();
-                            }
+                        if (exportar) {
+                            System.out.println("\n   -> ¡Reporte exportado exitosamente como 'Reporte_Personalizado.txt'!");
                         }
-                        nodoEstActual = nodoEstActual.getNext();
+
+                    } catch (IOException e) {
+                        System.out.println("\n   -> [!] Hubo un error al intentar exportar el archivo: " + e.getMessage());
                     }
                     break;
+
 
                 case 10:
                     System.out.println("\n--- [10] CÁLCULOS BLOQUEADOS POR FALTA DE NOTAS ---");
