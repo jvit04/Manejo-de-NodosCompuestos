@@ -137,10 +137,15 @@ class ListaCompuesta <E, F> implements Serializable {
         return resultado;
     }
 
-    public NodoCompuesto<E,F> buscarExacto(Comparator<E> c, E data){
-        for (NodoCompuesto<E, F> p = header; p != null; p = p.getNext()){
-            // usamos == 0 para ver si ya existe el elemento idéntico
-            if(c.compare(p.getData(), data) == 0) return p;
+    // Metodo buscarExacto MEJORADO (a prueba de nulos)
+    public NodoCompuesto<E,F> buscarExacto(Comparator<E> comparador, E elementoBusqueda){
+        if (this.isEmpty() || elementoBusqueda == null) {
+            return null; // Si la lista está vacía o me pasan un nulo, devuelvo nulo directamente
+        }
+        for (NodoCompuesto<E,F> i = this.getHeader(); i != null; i = i.getNext()) {
+            if(comparador.compare(i.getData(), elementoBusqueda) == 0){
+                return i;
+            }
         }
         return null;
     }
@@ -247,21 +252,34 @@ class ListaCompuesta <E, F> implements Serializable {
         //Su función es devolver una lista de las actividades que sean posteriores a una fecha dada.
 
 
-
+    // Metodo diferencia MEJORADO (a prueba de listas vacías)
     //Metodo que devuelve la diferencia entre 2 listas. Servirá para encontrar las Entregas Incompletas.
     public ListaCompuesta<E,F> diferencia(ListaCompuesta<E,F> lista2, Comparator<E> comparator){
-        //Lista donde se guardará la diferencia
         ListaCompuesta<E,F> diferencia = new ListaCompuesta<>();
-        //Recorrido de la lista principal
-        for (NodoCompuesto<E,F> i =this.getHeader();i!=null;i=i.getNext()) {
-            E datoActual= i.getData();
-            //Usamos el metodo buscarExacto para validar que exista en B
-            if(lista2.buscarExacto(comparator,datoActual)==null){
-                diferencia.add(new NodoCompuesto<>(datoActual));//al no existir se agrega a la lista
+
+        // VALIDACIÓN 1: Si mi lista principal está vacía, no hay nada que comparar.
+        if (this.isEmpty()) {
+            return diferencia; // Retorna lista vacía
+        }
+
+        // VALIDACIÓN 2: Si la lista2 es nula o está vacía, la diferencia es TODA mi lista principal.
+        if (lista2 == null || lista2.isEmpty()) {
+            for (NodoCompuesto<E,F> i = this.getHeader(); i != null; i = i.getNext()) {
+                diferencia.add(new NodoCompuesto<>(i.getData()));
+            }
+            return diferencia;
+        }
+
+        // Recorrido normal si ambas listas tienen datos
+        for (NodoCompuesto<E,F> i = this.getHeader(); i != null; i = i.getNext()) {
+            E datoActual = i.getData();
+            if(lista2.buscarExacto(comparator, datoActual) == null){
+                diferencia.add(new NodoCompuesto<>(datoActual));
             }
         }
         return diferencia;
     }
+
  }
 
 
