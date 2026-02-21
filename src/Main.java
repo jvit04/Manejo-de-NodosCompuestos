@@ -5,6 +5,7 @@ import Comparadores.*;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 import java.io.IOException;
 
@@ -32,7 +33,7 @@ public class Main {
         // Iniciamos el bucle del menú para que el programa no se cierre hasta elegir 0
         do {
             Menu.mostrarOpciones();
-            opcion = scanner.nextInt();
+            opcion = leerEnteroSeguro(scanner); // USAMOS EL LECTOR SEGURO AQUÍ
 
             switch (opcion) {
                 case 1:
@@ -104,18 +105,14 @@ public class Main {
 
                     // =========================================================================
                     // Primero pedimos al usuario el rango de fechas para filtrar las actividades.
-                    // Limpiamos el buffer del scanner antes de leer los textos.
+                    // Usamos el método seguro para evitar crasheos si escriben mal la fecha.
                     // =========================================================================
-                    scanner.nextLine();
-                    System.out.print("Ingrese fecha de inicio del envío (YYYY-MM-DD): ");
-                    LocalDate fechaInicio4 = LocalDate.parse(scanner.nextLine());
-                    System.out.print("Ingrese fecha de fin del envío (YYYY-MM-DD): ");
-                    LocalDate fechaFin4 = LocalDate.parse(scanner.nextLine());
+                    LocalDate fechaInicio4 = leerFechaSegura(scanner, "Ingrese fecha de inicio del envío (YYYY-MM-DD): ");
+                    LocalDate fechaFin4 = leerFechaSegura(scanner, "Ingrese fecha de fin del envío (YYYY-MM-DD): ");
 
                     // =========================================================================
                     // Filtramos la lista principal de actividades para obtener solo aquellas
                     // cuya fecha esté dentro del rango especificado por el usuario.
-                    // Usamos buscarIgualesPrincipal con nuestro nuevo comparador.
                     // =========================================================================
                     CompararActividadEnRango compRangoAct = new CompararActividadEnRango(fechaInicio4, fechaFin4);
                     ListaCompuesta<Actividad, Entrega> actividadesFiltradas = listaActividades.buscarIgualesPrincipal(compRangoAct, new Actividad("dummy"));
@@ -127,8 +124,7 @@ public class Main {
 
                     // =========================================================================
                     // Recorremos la lista de estudiantes uno por uno.
-                    // Para cada estudiante, comparamos sus entregas con la sublista de
-                    // actividades que acabamos de filtrar (las que están en el rango).
+                    // Para cada estudiante, comparamos sus entregas con la sublista filtrada.
                     // =========================================================================
                     NodoCompuesto<Estudiante, Entrega> estActual4 = listaEstudiantes.getHeader();
 
@@ -220,9 +216,6 @@ public class Main {
                     // =========================================================================
                     System.out.println("\n--- [8] CREAR UN NUEVO CÁLCULO AGREGADO ---");
 
-                    scanner.nextLine();
-
-
                     System.out.print("¿Qué nombre le pondrá a este cálculo? (Ej: Promedio Final): ");
                     String nombreCalc = scanner.nextLine();
 
@@ -230,7 +223,7 @@ public class Main {
                     System.out.println("1. Promedio");
                     System.out.println("2. Suma Total");
                     System.out.print("Elija (1 o 2): ");
-                    int tipoOp = scanner.nextInt();
+                    int tipoOp = leerEnteroSeguro(scanner); // USAMOS EL LECTOR SEGURO AQUÍ
 
                     String operacion = "Suma";
                     if (tipoOp == 1) {
@@ -241,9 +234,7 @@ public class Main {
                     System.out.println("1. Todas las actividades del curso");
                     System.out.println("2. Elegir manualmente por nombres");
                     System.out.print("Elija (1 o 2): ");
-                    int tipoSeleccion = scanner.nextInt();
-                    scanner.nextLine();
-
+                    int tipoSeleccion = leerEnteroSeguro(scanner); // USAMOS EL LECTOR SEGURO AQUÍ
 
                     ListaCompuesta<String, String> actividadesElegidas = new ListaCompuesta<>();
 
@@ -290,7 +281,6 @@ public class Main {
                     // Solicitamos al usuario qué actividades y cálculos desea incluir.
                     // Si escribe 'Todas' o 'Todos', se omitirá el filtro mostrando el total.
                     // =========================================================================
-                    scanner.nextLine();
                     System.out.print("Ingrese las actividades a incluir separadas por coma (o escriba 'Todas'): ");
                     String actsElegidas = scanner.nextLine().trim();
 
@@ -421,7 +411,7 @@ public class Main {
 
                 case 11:
                     System.out.println("\n--- [11] BUSCADOR DE ACTIVIDADES EN CÁLCULOS ---");
-                    scanner.nextLine();
+
                     System.out.print("Ingrese el nombre exacto de la actividad (Ej: Taller 1): ");
 
                     // =========================================================================
@@ -455,5 +445,40 @@ public class Main {
         } while (opcion != 0);
 
         scanner.close();
+    }
+
+    // =========================================================================
+    // Metodos aparte para la validacino de entradas
+    // =========================================================================
+
+    /**
+     * Lee una entrada de la consola garantizando que sea un número entero.
+     * Si el usuario ingresa letras u otros caracteres, atrapa el error y vuelve a pedirlo.
+     */
+    private static int leerEnteroSeguro(Scanner scanner) {
+        while (true) {
+            try {
+                // Leemos toda la línea y la convertimos a entero
+                return Integer.parseInt(scanner.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("   [!] Error: Entrada inválida. Por favor, ingrese un número entero.");
+                System.out.print("-> Intente de nuevo: ");
+            }
+        }
+    }
+
+    /**
+     * Lee una fecha de la consola garantizando que cumpla con el formato YYYY-MM-DD.
+     */
+    private static LocalDate leerFechaSegura(Scanner scanner, String mensaje) {
+        while (true) {
+            System.out.print(mensaje);
+            String entrada = scanner.nextLine().trim();
+            try {
+                return LocalDate.parse(entrada);
+            } catch (DateTimeParseException e) {
+                System.out.println("   [!] Error: Formato de fecha incorrecto. Use el formato YYYY-MM-DD (Ej: 2026-02-25).");
+            }
+        }
     }
 }
