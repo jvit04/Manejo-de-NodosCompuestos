@@ -182,13 +182,21 @@ public class CargadorDeArchivos {
 
         try (BufferedReader br = new BufferedReader(new FileReader(rutaArchivo))) {
             String linea;
+            int numLinea = 1;
             while ((linea = br.readLine()) != null) {
                 // Formato esperado: NombreCalculo,Formula_Postfija
-                String[] datos = linea.split(",");
-                if(datos.length >= 2){
+                try {
+                    String[] datos = linea.split(",");
+                    if (datos.length < 2) {
+                        throw new FormatoArchivoException("Faltan datos de la fórmula en la línea " + numLinea);
+                    }
                     Calculo c = new Calculo(datos[0].trim(), datos[1].trim());
                     lista.add(new NodoCompuesto<>(c));
+
+                } catch (FormatoArchivoException e) {
+                    System.err.println("[Aviso Cálculos] " + e.getMessage() + ". Se omitió esta línea.");
                 }
+                numLinea++;
             }
             System.out.println(">> Cálculos cargados desde archivo: " + lista.getSize());
         } catch (IOException e) {

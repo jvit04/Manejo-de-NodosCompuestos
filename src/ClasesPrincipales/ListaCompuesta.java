@@ -119,6 +119,7 @@ public class ListaCompuesta<E, F> implements Serializable {
      * @return Una nueva ClasesPrincipales.ListaCompuesta con los elementos que coincidan.
      */
     public ListaCompuesta<E, F> buscarIgualesPrincipal(Comparator<E> c, E data) {
+        if (this.isEmpty() || data == null) return new ListaCompuesta<>();
         ListaCompuesta<E, F> resultado = new ListaCompuesta<>();
         for (NodoCompuesto<E, F> p = this.header; p != null; p = p.getNext()) {
             if (c.compare(p.getData(), data) == 0) {
@@ -137,6 +138,7 @@ public class ListaCompuesta<E, F> implements Serializable {
      * @return  Una nueva ClasesPrincipales.ListaCompuesta con los elementos menores al dato proporcionado.
      */
     public ListaCompuesta<E, F> buscarMenoresPrincipal(Comparator<E> c, E data) {
+        if (this.isEmpty() || data == null) return new ListaCompuesta<>();
         ListaCompuesta<E, F> nueva = new ListaCompuesta<>();
         for (NodoCompuesto<E, F> p = header; p != null; p = p.getNext()) {
             if (c.compare(p.getData(), data) < 0) {
@@ -155,6 +157,7 @@ public class ListaCompuesta<E, F> implements Serializable {
      * @return Una nueva ClasesPrincipales.ListaCompuesta con los elementos mayores al dato proporcionado.
      */
     public ListaCompuesta<E, F> buscarMayoresPrincipal(Comparator<E> c, E data) {
+        if (this.isEmpty() || data == null) return new ListaCompuesta<>();
         ListaCompuesta<E, F> nueva = new ListaCompuesta<>();
         for (NodoCompuesto<E, F> p = header; p != null; p = p.getNext()) {
             if (c.compare(p.getData(), data) > 0) {
@@ -173,6 +176,7 @@ public class ListaCompuesta<E, F> implements Serializable {
      * @return Una nueva ClasesPrincipales.ListaCompuesta con los nodos principales que cumplan la condición.
      */
     public ListaCompuesta<E, F> buscarTodosMenoresEnListaSecundaria(Comparator<F> c, F data) {
+        if (this.isEmpty() || data == null) return new ListaCompuesta<>();
         ListaCompuesta<E, F> nueva = new ListaCompuesta<>();
         for (NodoCompuesto<E, F> p = this.header; p != null; p = p.getNext()) {
             ListaCompuesta<F, F> sublista = p.getReferenciaLista();
@@ -192,6 +196,7 @@ public class ListaCompuesta<E, F> implements Serializable {
      * @return Una nueva ClasesPrincipales.ListaCompuesta (de tipo <F,F>) con los elementos secundarios encontrados.
      */
     public ListaCompuesta<F, F> buscarIgualesEnListaSecundaria(Comparator<F> c, F data) {
+        if (this.isEmpty() || data == null) return new ListaCompuesta<>();
         ListaCompuesta<F, F> nueva = new ListaCompuesta<>();
         for (NodoCompuesto<E, F> p = this.header; p != null; p = p.getNext()) {
             ListaCompuesta<F, F> sublista = p.getReferenciaLista();
@@ -217,6 +222,7 @@ public class ListaCompuesta<E, F> implements Serializable {
      * @return Una nueva ClasesPrincipales.ListaCompuesta con los elementos de ambas listas unidos.
      */
     public ListaCompuesta<E, F> union(ListaCompuesta<E, F> lista2, Comparator<E> c) {
+        if (this.isEmpty()) return new ListaCompuesta<>();
         ListaCompuesta<E, F> resultado = new ListaCompuesta<>();
 
         // 1. Agregar todos los elementos de la lista actual
@@ -247,7 +253,8 @@ public class ListaCompuesta<E, F> implements Serializable {
      * */
     public ListaCompuesta<E, F> interseccion(ListaCompuesta<E, F> lista2, Comparator<E> c) {
         ListaCompuesta<E, F> resultado = new ListaCompuesta<>();
-        if (lista2 == null) return resultado;
+        if (lista2 == null||this.isEmpty()) return resultado;
+
 
         for (NodoCompuesto<E, F> p = this.header; p != null; p = p.getNext()) {
             if (lista2.buscarExacto(c, p.getData()) != null) {

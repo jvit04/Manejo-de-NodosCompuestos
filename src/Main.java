@@ -420,7 +420,11 @@ public class Main {
                     // de la fórmula matemática (string) del cálculo.
                     // =========================================================================
                     String actBuscada = scanner.nextLine().replace(" ", "_");
-
+                    // Verificar que no esté vacío, sino sale
+                    if (actBuscada.isEmpty()) {
+                        System.out.println("   [!] No ingresó ningún nombre válido.");
+                        break;
+                    }
                     boolean encontro = false;
                     NodoCompuesto<Calculo, String> nodoC = listaCalculos.getHeader();
 

@@ -39,7 +39,12 @@ public class CalculadoraConPilas {
                             } else if (elementoTemporal.equals("*")) {
                                 resultado = operandoIzquierdo * operandoDerecho;
                             } else if (elementoTemporal.equals("/")) {
-                                resultado = operandoIzquierdo / operandoDerecho;
+                                if (operandoDerecho == 0) {
+                                    System.err.println("   [!] Advertencia: Se intentó dividir por cero en la fórmula. Asignando 0 por defecto.");
+                                    resultado = 0.0;
+                                } else {
+                                    resultado = operandoIzquierdo / operandoDerecho;
+                                }
                             }
 
                             pila.push(resultado);
